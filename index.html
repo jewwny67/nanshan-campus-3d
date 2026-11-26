@@ -189,10 +189,20 @@
         header.panel h1 { font-size: 18px; }
         header.panel p { font-size: 11.5px; line-height: 1.55; }
         .legend { display: none; }
-        .legend.show { display: block; top: auto; bottom: calc(140px + env(safe-area-inset-bottom)); }
+        .legend.show { display: block; top: auto; left: 12px; right: auto; bottom: calc(108px + env(safe-area-inset-bottom)); }
         .hint { display: none; }
-        .info { left: 12px; right: 12px; width: auto; bottom: calc(84px + env(safe-area-inset-bottom)); }
+        .info { left: 12px; right: 12px; width: auto; bottom: calc(108px + env(safe-area-inset-bottom)); }
         input[type="range"] { width: 34vw; }
+        /* 底部单行栏：贴底满宽，时间一行、四个按钮等宽排成一排，都在最下面 */
+        .controls {
+          left: 0; right: 0; bottom: 0; transform: none;
+          max-width: none; gap: 8px;
+          padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+          border-radius: 16px 16px 0 0;
+        }
+        .time-wrap { flex: 0 0 100%; justify-content: center; }
+        .controls .btn { flex: 1 1 0; min-width: 0; padding: 6px 2px; font-size: 12.5px; white-space: nowrap; }
+        .compass { bottom: calc(108px + env(safe-area-inset-bottom)); }
       }
     </style>
   </head>
