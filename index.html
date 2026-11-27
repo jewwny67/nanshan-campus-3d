@@ -341,7 +341,6 @@
         <button type="button" class="preset-btn wx" data-wx="cloudy">多云</button>
         <button type="button" class="preset-btn wx" data-wx="rain">雨</button>
         <button type="button" class="preset-btn wx" data-wx="snow">雪</button>
-        <button type="button" class="preset-btn wx" data-wx="fog">雾</button>
         <span id="wxNow" title="绍兴今日天气（自动读取）"></span>
       </span>
       <span class="row-break" aria-hidden="true"></span>
@@ -2801,7 +2800,7 @@
             if (code === 0) return ['clear', '晴'];
             if (code === 1 || code === 2) return ['cloudy', '多云'];
             if (code === 3) return ['cloudy', '阴'];
-            if (code === 45 || code === 48) return ['fog', '雾'];
+            if (code === 45 || code === 48) return ['cloudy', '雾'];
             if ([71, 73, 75, 77, 85, 86].indexOf(code) >= 0) return ['snow', '雪'];
             return ['rain', '雨'];
           }
