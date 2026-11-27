@@ -1080,6 +1080,28 @@
         return geo;
       }
 
+      function vhash(ix, iz) {
+        var s = Math.sin(ix * 127.1 + iz * 311.7) * 43758.5453;
+        return s - Math.floor(s);
+      }
+      function vnoise(x, z) {
+        var ix = Math.floor(x), iz = Math.floor(z);
+        var fx = x - ix, fz = z - iz;
+        var ux = fx * fx * (3 - 2 * fx), uz = fz * fz * (3 - 2 * fz);
+        var a = vhash(ix, iz), b = vhash(ix + 1, iz), c = vhash(ix, iz + 1), d = vhash(ix + 1, iz + 1);
+        return a + (b - a) * ux + (c - a) * uz + (a - b - c + d) * ux * uz;
+      }
+      function fbm(x, z) {
+        var v = 0, amp = 0.55, f = 1, tot = 0;
+        for (var o = 0; o < 4; o++) {
+          v += vnoise(x * f, z * f) * amp;
+          tot += amp;
+          f *= 2.13;
+          amp *= 0.5;
+        }
+        return v / tot;
+      }
+
       function massifGeo(peaks, x0, x1, z0, z1, segX, segZ, seed, maxH) {
         // 整片山体高度场：各峰高斯隆起叠加，峰间连续无缝；噪声随高度增强，平地保持平整
         var w = x1 - x0, d = z1 - z0;
@@ -1096,9 +1118,8 @@
             var sig = pk[2] * 0.52;
             h += pk[2] * pk[3] * Math.exp(-(dx * dx + dz * dz) / (2 * sig * sig));
           }
-          var nz = 0.10 * Math.sin(wx * 0.30 + sd) * Math.cos(wz * 0.26 + sd * 1.7) +
-                   0.06 * Math.sin((wx * 0.7 - wz * 0.5) * 0.5 + sd * 2.3) +
-                   0.03 * Math.sin(wx * 1.6 + wz * 1.2 + sd * 3.1);
+          var nz = (fbm(wx * 0.055 + sd * 3.7, wz * 0.055 + sd * 1.9) - 0.5) * 0.34 +
+                   (fbm(wx * 0.22 + sd * 7.3, wz * 0.22 + sd * 4.1) - 0.5) * 0.12;
           h = h * (1 + nz * Math.min(1, h / 1.5));
           pos.setZ(i, h - 0.06);
         }
