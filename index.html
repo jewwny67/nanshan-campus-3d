@@ -107,6 +107,7 @@
         max-width: calc(100vw - 16px);
       }
       .time-wrap { display: flex; align-items: center; gap: 9px; }
+      .controls .row-break { flex-basis: 100%; height: 0; }
       .time-wrap label { font-size: 12.5px; color: #cfe1f5; white-space: nowrap; }
       #timeOut {
         font-variant-numeric: tabular-nums; font-size: 14px; font-weight: 600; color: #ffc46b;
@@ -236,7 +237,8 @@
           border-radius: 16px 16px 0 0;
         }
         .time-wrap { flex: 0 0 100%; justify-content: center; }
-        .controls .btn { flex: 1 1 0; min-width: 0; padding: 6px 2px; font-size: 12.5px; white-space: nowrap; }
+        .time-presets { display: none; }
+        .controls .btn { flex: 1 1 0; min-width: 0; padding: 6px 1px; font-size: 11.5px; white-space: nowrap; }
         .compass { bottom: calc(108px + env(safe-area-inset-bottom)); }
       }
     </style>
@@ -296,6 +298,7 @@
         <button type="button" class="preset-btn" data-hour="17.75">日落</button>
         <button type="button" class="preset-btn" data-hour="21">夜色</button>
       </span>
+      <span class="row-break" aria-hidden="true"></span>
       <button class="btn" id="labelBtn" aria-pressed="true">建筑名标签</button>
       <button class="btn" id="panModeBtn" aria-pressed="false" title="切换左键/单指为平移移动视角">平移视角</button>
       <button class="btn" id="orbitBtn" aria-pressed="false">自动漫游</button>
