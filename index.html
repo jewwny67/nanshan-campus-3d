@@ -47,6 +47,7 @@
       .bldg-label.lbl-sport { border-color: rgba(156,200,232,.7); }
       .bldg-label.lbl-gate { border-color: rgba(194,59,46,.75); }
       .road-label::before { display: none; }
+      .bldg-label.lbl-none::before { display: none; }
       .road-label {
         pointer-events: none;
         font-size: 11px; letter-spacing: .35em; white-space: nowrap;
@@ -2583,7 +2584,7 @@
         addLabel('景岳路', new THREE.Vector3(21, 0.6, -20), 'road-label');
         addLabel('寅初路', new THREE.Vector3(-24, 0.6, -29), 'road-label');
         addLabel('阳明湖', new THREE.Vector3(-13.5, 0.6, -18), 'road-label');
-        addLabel('龙山飞瀑（人造瀑布）', new THREE.Vector3(-31, 2.1, 10));
+        addLabel('龙山飞瀑（人造瀑布）', new THREE.Vector3(-31, 2.1, 10), 'lbl-none');
 
         /* ---------------- 选中高亮 + 信息卡 ---------------- */
         var raycaster = new THREE.Raycaster();
