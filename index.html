@@ -1041,34 +1041,32 @@
         })();
 
       function ridgeGeo(r, segX, segY, seed) {
-        var geo = new THREE.SphereGeometry(r, segX, segY);
-        var pos = geo.attributes.position, v = new THREE.Vector3();
+        // 高度场山体：平面按圆顶轮廓抬高，无球面极点挤压，山顶圆弧、山脚自然摊开
+        var geo = new THREE.PlaneGeometry(r * 2, r * 2, segX, segY);
+        var pos = geo.attributes.position;
         var sd = seed || 1;
+        var a1 = sd * 1.7, a2 = sd * 2.9 + 1.3, a3 = sd * 4.7 + 2.1;
         for (var i = 0; i < pos.count; i++) {
-          v.fromBufferAttribute(pos, i);
-          var ang = Math.atan2(v.z, v.x);
-          var yy = v.y / r;
-          // 多倍频脊线噪声：大起伏 + 中脊 + 细碎；越靠近山顶噪声越弱，山顶保持圆弧形、不出尖头
-          var ridge = Math.abs(Math.sin(ang * 2.3 + sd + yy * 1.7));
-          var topSmooth = 1 - 0.78 * Math.pow(Math.max(0, yy), 2);
-          var n = (0.10 * Math.sin(ang * 3 + sd) + 0.07 * Math.sin(ang * 6.3 + sd * 2) +
-                  0.05 * Math.cos(yy * 5 + ang * 2.7) + 0.03 * Math.sin(yy * 9 + sd) +
-                  0.035 * (ridge - 0.5) + 0.02 * Math.sin(ang * 13.7 + yy * 11 + sd * 3) +
-                  0.01 * Math.sin(ang * 23.1 - yy * 17 + sd * 5)) * topSmooth;
-          v.multiplyScalar(1 + n);
-          // 山脚向外摊开、顶部略收尖，轮廓更像真山
-          var flare = 1 + 0.16 * Math.max(0, -yy);
-          v.x *= flare; v.z *= flare;
-          pos.setXYZ(i, v.x, v.y, v.z);
+          var px = pos.getX(i), py = pos.getY(i);
+          var d = Math.sqrt(px * px + py * py) / r;
+          var dc = Math.min(d, 1);
+          var fall = Math.pow((Math.cos(dc * Math.PI) + 1) / 2, 1.15);
+          var nz = 0.16 * Math.sin(px * 0.32 + a1) * Math.cos(py * 0.27 + a2) +
+                   0.10 * Math.sin((px * 0.8 - py * 0.6) * 0.55 + a3) +
+                   0.05 * Math.sin(px * 1.7 + py * 1.3 + a1 * 2);
+          var h = r * fall * (1 + nz * (1 - dc) * 1.6);
+          pos.setZ(i, h - 0.06);
         }
+        geo.rotateX(-Math.PI / 2);
         geo.computeVertexNormals();
         // 顶点色：低处深绿 → 高处浅黄绿，陡坡露岩灰，带一点随机斑驳
         var nor = geo.attributes.normal;
         var cols = new Float32Array(pos.count * 3);
         var cLow = [0.58, 0.74, 0.52], cHigh = [0.96, 1.0, 0.78], cRock = [0.88, 0.84, 0.76];
+        var v = new THREE.Vector3();
         for (var j = 0; j < pos.count; j++) {
           v.fromBufferAttribute(pos, j);
-          var hN = Math.max(0, Math.min(1, v.y / r * 0.5 + 0.5));
+          var hN = Math.max(0, Math.min(1, v.y / r));
           var slope = 1 - Math.max(0, nor.getY(j));
           var rockMix = Math.max(0, Math.min(1, (slope - 0.42) * 2.2));
           var jitter = 0.92 + 0.16 * Math.abs(Math.sin(v.x * 12.9898 + v.z * 78.233 + sd));
