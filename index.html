@@ -2819,6 +2819,7 @@
         })();
 
         function setTime(h) {
+          if (typeof h !== 'number' || isNaN(h)) return;
           var hh = Math.floor(h), mm = Math.round((h - hh) * 60);
           if (mm === 60) { hh += 1; mm = 0; }
           timeOut.textContent = (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
@@ -2926,7 +2927,7 @@
             if (lastSnapped !== snap) {
               lastSnapped = snap;
               if (navigator.vibrate) navigator.vibrate(12);
-              Array.prototype.forEach.call(document.querySelectorAll('.preset-btn'), function (x) {
+              Array.prototype.forEach.call(document.querySelectorAll('.preset-btn[data-hour]'), function (x) {
                 x.classList.toggle('active', parseFloat(x.getAttribute('data-hour')) === snap);
               });
             }
@@ -3103,18 +3104,18 @@
           keysDown[e.key.toLowerCase()] = true;
         });
         window.addEventListener('keyup', function (e) { keysDown[e.key.toLowerCase()] = false; });
-        Array.prototype.forEach.call(document.querySelectorAll('.preset-btn'), function (pb) {
+        Array.prototype.forEach.call(document.querySelectorAll('.preset-btn[data-hour]'), function (pb) {
           pb.addEventListener('click', function () {
             var h = parseFloat(pb.getAttribute('data-hour'));
             timeSlider.value = h;
             setTime(h);
-            Array.prototype.forEach.call(document.querySelectorAll('.preset-btn'), function (x) {
+            Array.prototype.forEach.call(document.querySelectorAll('.preset-btn[data-hour]'), function (x) {
               x.classList.toggle('active', x === pb);
             });
           });
         });
         timeSlider.addEventListener('input', function () {
-          Array.prototype.forEach.call(document.querySelectorAll('.preset-btn'), function (x) { x.classList.remove('active'); });
+          Array.prototype.forEach.call(document.querySelectorAll('.preset-btn[data-hour]'), function (x) { x.classList.remove('active'); });
         });
         var orbitBtn = document.getElementById('orbitBtn');
         orbitBtn.addEventListener('click', function () {
