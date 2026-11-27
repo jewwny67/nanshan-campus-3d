@@ -1788,8 +1788,8 @@
             runway2.receiveShadow = true;
             grp.add(runway2);
             // 二层楼板（架空层顶板）
-            var slab2 = new THREE.Mesh(new THREE.BoxGeometry(19.4, 0.24, 30.6), slabMat2);
-            slab2.position.set(-1.0, 1.29, 0); // 西缘外延至相对 -10.7：看台后排上方遮挡（楼板）向外延伸一点（用户要求）
+            var slab2 = new THREE.Mesh(new THREE.BoxGeometry(23.7, 0.24, 30.6), slabMat2);
+            slab2.position.set(1.15, 1.29, 0); // 主楼与东扩段合为一整块楼板（相对 -10.7..13.0）：西缘为看台后排遮挡外延，东缘含东扩段（用户要求建筑做成一个整体）
             slab2.castShadow = true; slab2.receiveShadow = true;
             slab2.userData.b = b; slab2.userData.grp = grp;
             grp.add(slab2); pickables.push(slab2);
@@ -1811,11 +1811,7 @@
             }
             // 架空层向东扩出段（用户要求：去掉西扩段，移到最东边加宽）：顶板、柱列、地面整体东扩；
             // 穿楼的沥青路位置不变，仍从主楼柱列中间穿过；100米跑道在穿楼马路东边的主楼条带上
-            var extSlab = new THREE.Mesh(new THREE.BoxGeometry(4.5, 0.24, 30.6), slabMat2);
-            extSlab.position.set(10.75, 1.32, 0); // 比主楼板高 0.03：两板边缘搭接处顶面不共面、不闪烁；东扩段做窄（宽 4.5），东缘相对 13.0（绝对 x≈39.5）
-            extSlab.castShadow = true; extSlab.receiveShadow = true;
-            extSlab.userData.b = b; extSlab.userData.grp = grp;
-            grp.add(extSlab); pickables.push(extSlab);
+            // （东扩段楼板已并入 slab2 整块，不再单独建板）
             for (var ci3 = 0; ci3 < 9; ci3++) {
               var c3 = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.17, 0.55), colMat2);
               c3.position.set(12.6, 0.585, -14 + ci3 * 3.5);
@@ -1862,27 +1858,19 @@
             l2mat.userData.t = b.t; l2mat.userData.n = b.n; l2mat.userData.seed = Math.random();
             patchWindowOff(l2mat, 1);
             facadeMats.push(l2mat);
-            var l2 = new THREE.Mesh(new THREE.BoxGeometry(16.6, 0.54, 29.8), [l2mat, l2mat, slabMat2, hallBot, l2mat, l2mat]);
-            l2.position.set(0, 1.68, 0);
+            var l2 = new THREE.Mesh(new THREE.BoxGeometry(21.2, 0.54, 29.8), [l2mat, l2mat, slabMat2, hallBot, l2mat, l2mat]);
+            l2.position.set(2.3, 1.68, 0); // 主楼与东扩段二层合为一个整体（相对 -8.3..12.9）
             l2.castShadow = true; l2.receiveShadow = true;
             l2.userData.b = b; l2.userData.grp = grp;
             grp.add(l2); pickables.push(l2);
-            var l2e = new THREE.Mesh(new THREE.BoxGeometry(4.3, 0.54, 29.8), [l2mat, l2mat, slabMat2, hallBot, l2mat, l2mat]);
-            l2e.position.set(10.75, 1.68, 0); // 东扩段二层，与主楼同高（用户要求）
-            l2e.castShadow = true; l2e.receiveShadow = true;
-            l2e.userData.b = b; l2e.userData.grp = grp;
-            grp.add(l2e); pickables.push(l2e);
+            // （东扩段二层已并入 l2 整体，不再单独建体量）
             // 顶层楼板（屋顶运动场地面）
-            var roofSlab = new THREE.Mesh(new THREE.BoxGeometry(17.4, 0.21, 30.6), slabMat2);
-            roofSlab.position.set(0, 2.06, 0);
+            var roofSlab = new THREE.Mesh(new THREE.BoxGeometry(21.8, 0.21, 30.6), slabMat2);
+            roofSlab.position.set(2.2, 2.06, 0); // 顶层楼板主楼与东扩段合为一整块，顶面高度一致（相对 -8.7..13.1）
             roofSlab.castShadow = true; roofSlab.receiveShadow = true;
             roofSlab.userData.b = b; roofSlab.userData.grp = grp;
             grp.add(roofSlab); pickables.push(roofSlab);
-            var roofSlabE = new THREE.Mesh(new THREE.BoxGeometry(4.7, 0.21, 30.6), slabMat2);
-            roofSlabE.position.set(10.75, 2.09, 0); // 东扩段顶层楼板，与主楼同高（高 0.03 防搭接闪烁）
-            roofSlabE.castShadow = true; roofSlabE.receiveShadow = true;
-            roofSlabE.userData.b = b; roofSlabE.userData.grp = grp;
-            grp.add(roofSlabE); pickables.push(roofSlabE);
+            // （东扩段顶板已并入 roofSlab 整块，不再单独建板）
             // 屋顶足球场（西半）：绿地 + 白线
             var fc2 = document.createElement('canvas'); fc2.width = 128; fc2.height = 256;
             var fg2 = fc2.getContext('2d');
