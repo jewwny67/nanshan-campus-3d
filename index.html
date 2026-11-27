@@ -1608,7 +1608,7 @@
             // 综合体育建筑群：一层架空层（场馆体量 + 100米跑道 + 穿楼道路）、二层体量、顶层屋顶运动场
             var ctex = makeFacade(type.wall, type.win, 3, 4242, litRatioFor(b.t));
             var hallMat = new THREE.MeshStandardMaterial({ map: ctex.map, emissiveMap: ctex.emissiveMap, emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0, roughness: 0.85 });
-            hallMat.userData.t = b.t;
+            hallMat.userData.t = b.t; hallMat.userData.n = b.n;
             facadeMats.push(hallMat);
             var hallRoof = roofMaterial(type.roof, 0.88);
             var hallBot = flatMat('#5a5348', 1);
@@ -1699,7 +1699,7 @@
             // 二层体量（拳击馆、网球场地；只建楼层本身，两个场馆在层内的具体方位未定、不分位置）
             var l2tex = makeFacade(type.wall, type.win, 1, 5151, litRatioFor(b.t));
             var l2mat = new THREE.MeshStandardMaterial({ map: l2tex.map, emissiveMap: l2tex.emissiveMap, emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0, roughness: 0.9 });
-            l2mat.userData.t = b.t;
+            l2mat.userData.t = b.t; l2mat.userData.n = b.n;
             facadeMats.push(l2mat);
             var l2 = new THREE.Mesh(new THREE.BoxGeometry(16.6, 0.54, 29.8), [l2mat, l2mat, slabMat2, hallBot, l2mat, l2mat]);
             l2.position.set(0, 1.68, 0);
@@ -1829,7 +1829,7 @@
               emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0,
               roughness: 0.85, metalness: 0
             });
-            gside.userData.t = b.t;
+            gside.userData.t = b.t; gside.userData.n = b.n;
             facadeMats.push(gside);
             var gsideNoLight = new THREE.MeshStandardMaterial({
               map: gtex.map, roughness: 0.85, metalness: 0
@@ -1913,7 +1913,7 @@
             emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0,
             roughness: 0.85, metalness: 0
           });
-          side.userData.t = b.t;
+          side.userData.t = b.t; side.userData.n = b.n;
           facadeMats.push(side);
           var roofM = roofMaterial(type.roof, 0.9);
           var botM = flatMat('#5a5348', 1);
@@ -1972,6 +1972,10 @@
             if (Math.abs(x - 15.3) < 3.4 && Math.abs(z - 1.5) < 16) return true; // 体育馆架空层西扩段
             if (Math.abs(z - 17.4) < 1.7 && x > -27 && x < 43) return true;    // 宿舍区北路
             if (Math.abs(z - 40.6) < 1.7 && x > -27 && x < 47) return true;    // 宿舍区南路
+            if (Math.abs(x - 7.75) < 1.5 && z > 17 && z < 40) return true;     // 宿舍区内部南北向路（阳明/建功之间）
+            if (Math.abs(x - 21) < 1.5 && z > 17 && z < 40) return true;       // 宿舍区内部南北向路（建功/仲申之间）
+            if (Math.abs(x - 34) < 1.5 && z > 16 && z < 42) return true;       // 宿舍区东侧南北向路
+            if (Math.abs(z - 29) < 1.5 && x > 33 && x < 47) return true;       // 宿舍区东侧入口路
             if (Math.abs(x + 19.5) < 1.8 && z > 15 && z < 42) return true;     // 餐厅西侧南北向路
             if (Math.abs(x - 21) < 1.8 && z > -30 && z < -12) return true;     // 景岳路（与穿楼道路同在 x=21 直线）
             if (Math.abs(z + 13.5) < 1.6 && x > -7 && x < 22) return true;     // 田径场北侧横路（元培南路—景岳路/体育馆地面道路）
@@ -2033,9 +2037,9 @@
             if (ez < 19 && !blocked(ex, ez)) spots.push([ex, ez, 0.9 + rnd() * 0.3]);
           }
           // 教学楼边的行道树（手摆成排，位置已避开路面与楼体）
-          for (var mt = 0; mt < 7; mt++) spots.push([-3.5, -24 + mt * 5.7, 0.95]);        // 元培南路东侧行道树（2号楼/田径场西，避开加宽的路面）
-          for (var mt2 = 0; mt2 < 3; mt2++) spots.push([12.5 + mt2 * 4.5, -30.5, 0.9]);    // 寅初路北侧（3号楼前）
-          spots.push([-23.5, -30.5, 0.9], [-27, -30.5, 1]);   // 8号楼南侧行道树（已西移避开8号楼新东翼楼南墙面）
+          for (var mt = 0; mt < 7; mt++) spots.push([-3.0, -24 + mt * 5.7, 0.95]);        // 元培南路东侧行道树（2号楼/田径场西，避开加宽的路面）
+          for (var mt2 = 0; mt2 < 3; mt2++) spots.push([12.5 + mt2 * 4.5, -31.3, 0.9]);    // 寅初路北侧（3号楼前）
+          spots.push([-23.5, -31.3, 0.9], [-27, -31.3, 1]);   // 8号楼南侧行道树（已西移避开8号楼新东翼楼南墙面）
           for (var mt3 = 0; mt3 < 4; mt3++) spots.push([18.6, -18.5 + mt3 * 3.6, 0.9]);   // 景岳路西侧（17号楼东侧短条以南，避开短条南端）
           [24, 29, 33.5, 43, 46].forEach(function (tx) { spots.push([tx, -31.2, 0.95]); }); // 6号楼北侧绿化带（避开停车场）
           // 行道树 / 庭院树：松树（三层锥）与阔叶树（团状树冠）两类，全部 InstancedMesh 复用几何体与材质
@@ -2109,31 +2113,48 @@
           // 路灯沿主要道路等距布置（每6个单位一盏、两侧交替），不再是零星几盏
           var lamps = [];
           function lampInWater(x, z) {
-            var lx = (x + 13.5) / 7.6, lz = (z + 5) / 24.5;
+            var lx = (x + 13.5) / 5.3, lz = (z + 5) / 23.5;
             if (lx * lx + lz * lz < 1) return true;                       // 阳明湖
-            var px = (x + 10) / 6.6, pz = (z + 36) / 8.2;
+            var px = (x + 10) / 5.5, pz = (z + 36) / 7.0;
             if (px * px + pz * pz < 1) return true;                       // 北侧小湖
             var rzc = 43.5 + (x + 70) * 0.179;
             if (x > -74 && x < 30 && z > rzc - 1.6 && z < rzc + 5.2) return true; // 南河
             if (x > -16.5 && x < 10.5 && z > 49 && z < 61) return true;   // 南河弯段
             return false;
           }
+          // 路灯：每条马路两侧白色人行道上成对对称布置（off = 路面半宽 + 0.45）
           function lampRow(x0, z0, x1, z1, step, off) {
             var len = Math.hypot(x1 - x0, z1 - z0);
             var n = Math.floor(len / step);
             var dx = (x1 - x0) / len, dz = (z1 - z0) / len;
             for (var i = 0; i <= n; i++) {
-              var s = (i % 2 === 0 ? 1 : -1) * off;
-              var lx2 = x0 + dx * i * step - dz * s, lz2 = z0 + dz * i * step + dx * s;
-              if (!lampInWater(lx2, lz2)) lamps.push([lx2, lz2]);
+              var cx = x0 + dx * i * step, cz = z0 + dz * i * step;
+              [-off, off].forEach(function (s) {
+                var lx2 = cx - dz * s, lz2 = cz + dx * s;
+                if (!lampInWater(lx2, lz2)) lamps.push([lx2, lz2]);
+              });
             }
           }
-          lampRow(-5.9, -48, -5.9, 48, 6, 1.35);     // 元培南路
-          lampRow(-38, -29.2, 50, -29.2, 6, 1.25);   // 寅初路
-          lampRow(21, -28, 21, -16, 6, 1.25);        // 景岳路（体育馆以北段）
-          lampRow(-26, 17.4, 42, 17.4, 6, 1.25);     // 宿舍区北路
-          lampRow(-26, 40.6, 46, 40.6, 6, 1.25);     // 宿舍区南路
-          lampRow(-6, -13.5, 20, -13.5, 6, 1.2);    // 田径场北侧横路
+          lampRow(-5.9, -28, -5.9, 45, 6, 2.15);       // 元培南路（半宽1.7）
+          lampRow(-68, -29.2, 49, -29.2, 6, 1.25);     // 寅初路（半宽0.8）
+          lampRow(21, -28.5, 21, -13.5, 6, 1.45);      // 景岳路（半宽1.0）
+          lampRow(-5, -13.5, 22, -13.5, 6, 1.35);      // 田径场北侧横路（半宽0.9）
+          lampRow(22, -14.6, 43, -14.6, 6, 1.35);      // 6号楼南侧路（半宽0.9）
+          lampRow(-27, 17.4, 43, 17.4, 6, 1.35);       // 宿舍区北路（半宽0.9）
+          lampRow(-25, 40.6, 45, 40.6, 6, 1.35);       // 宿舍区南路（半宽0.9）
+          lampRow(-19.5, 17, -19.5, 40, 6, 1.45);      // 餐厅西侧路（半宽1.0）
+          lampRow(35, 29, 45, 29, 5, 1.35);            // 宿舍区东侧入口路（半宽0.9）
+          lampRow(7.75, 19, 7.75, 38, 6, 1.35);        // 宿舍区内部南北向路（阳明/建功之间）
+          lampRow(21, 19, 21, 38, 6, 1.35);            // 宿舍区内部南北向路（建功/仲申之间）
+          lampRow(34, 18.5, 34, 39.5, 6, 1.35);        // 宿舍区东侧南北向路
+          lampRow(21.5, -27.2, 36.1, -44.4, 6, 1.65);  // 大门广场斜路（半宽1.2）
+          lampRow(33.5, -43.0, 40.9, -49.0, 4.5, 2.15);// 南山大门进校路（半宽1.7）
+          lampRow(9.9, -52.8, 35.1, -44.4, 6, 1.35);   // 校内平行路（半宽0.9）
+          lampRow(-5.2, -26.3, 3.2, -54.6, 6, 1.55);   // 文渊路校门斜插路（半宽1.1）
+          lampRow(-1.8, -40.5, 11.0, -53.6, 6, 1.55);  // 红线斜路段（半宽1.1）
+          lampRow(-14.1, 57.8, -6.7, 44.2, 6, 1.55);   // 文澜桥斜路（半宽1.1）
+          lampRow(36.8, -12.1, 62.6, -44.1, 6, 1.8);   // C幢东侧斜路
+          // 体育馆架空层地面道路在建筑一层架空层内，不设路灯；城南大道在校外，不设
           var poleGeo = new THREE.CylinderGeometry(0.035, 0.05, 0.56, 6);
           var headGeo = new THREE.BoxGeometry(0.17, 0.055, 0.17);
           var poleMat = new THREE.MeshStandardMaterial({ color: 0x6f7880, roughness: 0.55, metalness: 0.35 });
@@ -2397,7 +2418,8 @@
             return gIn * gOut;
           })();
           facadeMats.forEach(function (m) {
-            m.emissiveIntensity = nf * (m.userData.t === 'teach' ? teachGate : 1.0);
+            var gated = m.userData.t === 'teach' || (m.userData.n && m.userData.n.indexOf('餐厅') >= 0);
+            m.emissiveIntensity = nf * (gated ? teachGate : 1.0);
           });
           signMats.forEach(function (m) { m.color.copy(SIGN_DAY).lerp(SIGN_NIGHT, nf); });
           lampHeadMat.emissiveIntensity = nf * 2.0;   // 灯头暖光、无光圈，微亮一点
