@@ -1606,10 +1606,6 @@
           scene.add(m);
         })();
 
-        // 体育馆东侧道路以东：室外泳池 + 球场小块（南山山脚）
-        groundPlane(11.5, 7.5, 0xd8d2c2, 58, 22, 0.08);
-        groundPlane(10, 6, 0x3f9fd8, 58, 22, 0.16);
-        groundPlane(9, 5.5, 0x86a860, 57, 29.5, 0.16);
 
         /* ---------------- 建筑 ---------------- */
         var pickables = [];
@@ -2057,7 +2053,6 @@
             if (nx1 * nx1 + nz1 * nz1 < 1) return true;                        // 南山主峰
             var nx2 = (x - 73) / 10, nz2 = (z - 13) / 10;
             if (nx2 * nx2 + nz2 * nz2 < 1) return true;                        // 南山南峰
-            if (Math.abs(x - 58) < 8 && Math.abs(z - 25) < 9) return true;     // 泳池球场
             if (x > -13.3 && x < -8.7 && z > -32.3 && z < -26.5) return true; // 桥下连通水道
             if (Math.abs(x + 5.9) < 2.4) return true;                          // 元培南路
             if (Math.abs(z + 29.2) < 1.7 && x > -40 && x < 52) return true;    // 寅初路（东段沿6号楼北侧通到C幢斜路）
