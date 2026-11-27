@@ -2301,6 +2301,30 @@
           scene.add(poles);
           scene.add(heads);
 
+          // 田径场探照灯：四角高杆大灯，晚上很亮，22点关
+          (function () {
+            var floodM = new THREE.MeshStandardMaterial({ color: 0x3a3a3a, emissive: 0xfff6e0, emissiveIntensity: 0, roughness: 0.5 });
+            sportLightMats.push(floodM);
+            var poleM2 = new THREE.MeshStandardMaterial({ color: 0x6f7880, roughness: 0.55, metalness: 0.35 });
+            [[-3, -9.5], [11, -9.5], [-3, 13.3], [11, 13.3]].forEach(function (fp) {
+              var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 2.2, 6), poleM2);
+              pole.position.set(fp[0], 1.1, fp[1]);
+              pole.castShadow = true;
+              scene.add(pole);
+              var head = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.22, 0.18), floodM);
+              head.position.set(fp[0], 2.25, fp[1]);
+              head.lookAt(4, 0.4, 1.9);
+              scene.add(head);
+            });
+            // 探照灯打亮整个田径场
+            var fieldGlow = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffe9c4, emissiveIntensity: 0, roughness: 1, transparent: true, opacity: 0.35 });
+            sportGlowMats.push(fieldGlow);
+            var fg = new THREE.Mesh(new THREE.PlaneGeometry(14.8, 24.6), fieldGlow);
+            fg.rotation.x = -Math.PI / 2;
+            fg.position.set(4, 0.31, 1.9);
+            scene.add(fg);
+          })();
+
           // 长椅：座板 + 靠背 + 两条金属腿，可点性不参与（纯装饰）
           var seatGeo = new THREE.BoxGeometry(0.72, 0.05, 0.22);
           var backGeo = new THREE.BoxGeometry(0.72, 0.2, 0.045);
