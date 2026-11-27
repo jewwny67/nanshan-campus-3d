@@ -1062,13 +1062,13 @@
             var postM = flatMat(0x6e4f30, 0.9);
             [[-0.55, -0.55], [0.55, -0.55], [-0.55, 0.55], [0.55, 0.55]].forEach(function (o) {
               var p = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.62, 0.09), postM);
-              p.position.set(-13.5 + o[0], 0.41, -8.9 + o[1]);
+              p.position.set(-13.5 + o[0], 0.41, -8 + o[1]);   // 亭子建在湖心岛正中心
               p.castShadow = true;
               scene.add(p);
             });
             var proof = new THREE.Mesh(new THREE.ConeGeometry(1.05, 0.5, 4), flatMat(0x7a4a34, 0.9));
             proof.rotation.y = Math.PI / 4;
-            proof.position.set(-13.5, 0.97, -8.9);
+            proof.position.set(-13.5, 0.97, -8);
             proof.castShadow = true;
             scene.add(proof);
           })();
