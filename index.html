@@ -525,8 +525,9 @@
         }
 
         // 程序化墙面：砂浆颗粒 + 楼层板带 + 窗洞明暗随机 + 夜间亮灯贴图
-        function makeFacade(wallColor, winColor, floors, seed) {
-          var key = 'facade|' + wallColor + '|' + winColor + '|' + floors + '|' + (seed % 9);
+        function makeFacade(wallColor, winColor, floors, seed, litRatio) {
+          var lr = litRatio == null ? 0.54 : litRatio;
+          var key = 'facade|' + wallColor + '|' + winColor + '|' + floors + '|' + (seed % 9) + '|' + lr;
           return cached(key, function () {
             var cw = 256, ch = 256;
             var rnd = seededRand(seed + 17);
@@ -587,7 +588,7 @@
                 g.beginPath(); g.moveTo(x, y + winH * 0.52); g.lineTo(x + winW, y + winH * 0.52); g.stroke();
                 g.fillStyle = 'rgba(0,0,0,0.08)';
                 g.fillRect(x - 1, y + winH + 1, winW + 2, 2.4);
-                if (rnd() > 0.46) {
+                if (rnd() < lr) {
                   var litW = winW * (rnd() > 0.35 ? 1 : 0.55);
                   var lx = x + (rnd() > 0.5 ? 0 : winW - litW);
                   var warm = rnd() > 0.22 ? '#ffc87a' : '#ffe6bb';
@@ -1566,6 +1567,13 @@
           return obj;
         }
 
+        function litRatioFor(t) {
+          if (t === 'teach') return 0.04;   // 教学楼夜里基本关灯，一面墙一两扇
+          if (t === 'dorm') return 0.54;    // 宿舍正常亮灯
+          if (t === 'life') return 0.30;    // 食堂等生活建筑
+          if (t === 'sport') return 0.15;   // 体育场馆
+          return 0.4;
+        }
         BUILDINGS.forEach(function (b, idx) {
           var type = TYPE[b.t];
           var h = b.hm ? b.hm / 10 : b.f * 0.34; // 有米数标注按米数（1单位=10米），否则层数×3.4米
@@ -1598,7 +1606,7 @@
           }
           if (b.complex) {
             // 综合体育建筑群：一层架空层（场馆体量 + 100米跑道 + 穿楼道路）、二层体量、顶层屋顶运动场
-            var ctex = makeFacade(type.wall, type.win, 3, 4242);
+            var ctex = makeFacade(type.wall, type.win, 3, 4242, litRatioFor(b.t));
             var hallMat = new THREE.MeshStandardMaterial({ map: ctex.map, emissiveMap: ctex.emissiveMap, emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0, roughness: 0.85 });
             facadeMats.push(hallMat);
             var hallRoof = roofMaterial(type.roof, 0.88);
@@ -1688,7 +1696,7 @@
             stripApron.receiveShadow = true;
             grp.add(stripApron);
             // 二层体量（拳击馆、网球场地；只建楼层本身，两个场馆在层内的具体方位未定、不分位置）
-            var l2tex = makeFacade(type.wall, type.win, 1, 5151);
+            var l2tex = makeFacade(type.wall, type.win, 1, 5151, litRatioFor(b.t));
             var l2mat = new THREE.MeshStandardMaterial({ map: l2tex.map, emissiveMap: l2tex.emissiveMap, emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0, roughness: 0.9 });
             facadeMats.push(l2mat);
             var l2 = new THREE.Mesh(new THREE.BoxGeometry(16.6, 0.54, 29.8), [l2mat, l2mat, slabMat2, hallBot, l2mat, l2mat]);
@@ -1813,7 +1821,7 @@
             // 楼体抬高、只由两根圆柱撑着（规划图上弧带里的两个⊙），进出校的斜路从架空段
             // 下面、两根柱子之间穿过。弧段沿圆弧生成、每段切向旋转。
             var ag = b.arcGate;
-            var gtex = makeFacade(type.wall, type.win, b.f, 1234 + idx * 777);
+            var gtex = makeFacade(type.wall, type.win, b.f, 1234 + idx * 777, litRatioFor(b.t));
             var gside = new THREE.MeshStandardMaterial({
               map: gtex.map, emissiveMap: gtex.emissiveMap,
               emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0,
@@ -1896,7 +1904,7 @@
             });
             b.parts = aparts;
           }
-          var tex = makeFacade(type.wall, type.win, b.f, 1234 + idx * 777);
+          var tex = makeFacade(type.wall, type.win, b.f, 1234 + idx * 777, litRatioFor(b.t));
           var side = new THREE.MeshStandardMaterial({
             map: tex.map, emissiveMap: tex.emissiveMap,
             emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0,
