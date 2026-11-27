@@ -2137,6 +2137,13 @@
             }
             return false;
           }
+          function lampOnBench(x, z) {   // 路灯不许压在长椅上
+            for (var i = 0; i < benchSpots.length; i++) {
+              var ddx = benchSpots[i][0] - x, ddz = benchSpots[i][1] - z;
+              if (ddx * ddx + ddz * ddz < 0.81) return true;
+            }
+            return false;
+          }
           function lampTooClose(x, z) {   // 两盏灯之间至少隔2.5个单位，不许挨着
             for (var i = 0; i < lamps.length; i++) {
               var ddx = lamps[i][0] - x, ddz = lamps[i][1] - z;
@@ -2152,7 +2159,7 @@
               var cx = x0 + dx * i * step, cz = z0 + dz * i * step;
               [-off, off].forEach(function (s) {
                 var lx2 = cx - dz * s, lz2 = cz + dx * s;
-                if (!lampInWater(lx2, lz2) && !lampOnRoad(lx2, lz2) && !lampTooClose(lx2, lz2)) lamps.push([lx2, lz2]);
+                if (!lampInWater(lx2, lz2) && !lampOnRoad(lx2, lz2) && !lampOnBench(lx2, lz2) && !lampTooClose(lx2, lz2)) lamps.push([lx2, lz2]);
               });
             }
           }
