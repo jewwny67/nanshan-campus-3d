@@ -1606,24 +1606,22 @@
           scene.add(pitch);
         })();
 
-        // 篮球场：秀松书院14东侧（按规划图），四块标准场地 2x2，约 (24.5,54.5)
+        // 篮球场：秀松书院14东侧（按规划图），两块标准场地（竖着两块合成一块），约 (24.5,54.5)
         (function () {
           var c = document.createElement('canvas'); c.width = 416; c.height = 320;
           var g = c.getContext('2d');
           g.fillStyle = '#7d9b76'; g.fillRect(0, 0, 416, 320);          // 场边草地
           for (var i = 0; i < 2; i++) {
-            for (var j = 0; j < 2; j++) {
-              var x = 12 + i * 200, y = 12 + j * 152, w = 188, h = 140;
-              g.fillStyle = '#b56a4a'; g.fillRect(x, y, w, h);          // 塑胶场地
-              g.strokeStyle = 'rgba(255,255,255,0.92)'; g.lineWidth = 3;
-              g.strokeRect(x + 4, y + 4, w - 8, h - 8);                 // 边线
-              g.beginPath(); g.moveTo(x + w / 2, y + 4); g.lineTo(x + w / 2, y + h - 4); g.stroke();  // 中线
-              g.beginPath(); g.arc(x + w / 2, y + h / 2, 20, 0, Math.PI * 2); g.stroke();            // 中圈
-              g.strokeRect(x + 4, y + h / 2 - 24, 52, 48);              // 左侧三秒区
-              g.strokeRect(x + w - 56, y + h / 2 - 24, 52, 48);         // 右侧三秒区
-              g.beginPath(); g.arc(x + 16, y + h / 2, 52, -Math.PI / 2.6, Math.PI / 2.6); g.stroke(); // 左三分线
-              g.beginPath(); g.arc(x + w - 16, y + h / 2, 52, Math.PI - Math.PI / 2.6, Math.PI + Math.PI / 2.6); g.stroke(); // 右三分线
-            }
+            var x = 12 + i * 200, y = 12, w = 188, h = 296;
+            g.fillStyle = '#b56a4a'; g.fillRect(x, y, w, h);            // 塑胶场地（竖着两块合成一块，长轴南北向）
+            g.strokeStyle = 'rgba(255,255,255,0.92)'; g.lineWidth = 3;
+            g.strokeRect(x + 4, y + 4, w - 8, h - 8);                   // 边线
+            g.beginPath(); g.moveTo(x + 4, y + h / 2); g.lineTo(x + w - 4, y + h / 2); g.stroke();  // 中线
+            g.beginPath(); g.arc(x + w / 2, y + h / 2, 22, 0, Math.PI * 2); g.stroke();            // 中圈
+            g.strokeRect(x + w / 2 - 26, y + 4, 52, 58);                // 北侧三秒区
+            g.strokeRect(x + w / 2 - 26, y + h - 62, 52, 58);           // 南侧三秒区
+            g.beginPath(); g.arc(x + w / 2, y + 18, 58, Math.PI * 0.08, Math.PI * 0.92); g.stroke();  // 北三分线
+            g.beginPath(); g.arc(x + w / 2, y + h - 18, 58, Math.PI * 1.08, Math.PI * 1.92); g.stroke(); // 南三分线
           }
           var tex = new THREE.CanvasTexture(c);
           if ('colorSpace' in tex && THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
@@ -1635,10 +1633,10 @@
           // 篮球架：每块场地两端各一个（立柱+篮板）
           var poleMat = new THREE.MeshStandardMaterial({ color: 0x555c63, roughness: 0.6, metalness: 0.4 });
           var boardMat = new THREE.MeshStandardMaterial({ color: 0xf2f2f2, roughness: 0.5 });
-          [[20.8, 53], [24.2, 53], [24.8, 53], [28.2, 53], [20.8, 56], [24.2, 56], [24.8, 56], [28.2, 56]].forEach(function (pt) {
+          [[22.5, 51.9], [22.5, 57.1], [26.5, 51.9], [26.5, 57.1]].forEach(function (pt) {
             var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.85, 8), poleMat);
             pole.position.set(pt[0], 0.42, pt[1]); pole.castShadow = true; scene.add(pole);
-            var board = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.28, 0.45), boardMat);
+            var board = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.28, 0.04), boardMat);
             board.position.set(pt[0], 0.88, pt[1]); board.castShadow = true; scene.add(board);
           });
         })();
