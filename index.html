@@ -1890,13 +1890,17 @@
             roofField.position.set(2.95, 2.17, 0);
             roofField.receiveShadow = true;
             grp.add(roofField);
-            [-3.2, 3.2].forEach(function (hz) {
-              var hp = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.83, 0.09), colMat2);
-              hp.position.set(4.6, 2.58, hz * 1.85);
+            // 屋顶篮球场球架：东半两块场地，每块南北两端各一个，篮板朝场内
+            [-13.2, -1.8, 1.8, 13.2].forEach(function (hz) {
+              var hp = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.95, 0.09), colMat2);
+              hp.position.set(8.8, 2.64, hz);
               grp.add(hp);
               var hb = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.45, 0.06), flatMat(0xf2f0ea, 0.8));
-              hb.position.set(4.6, 2.93, hz * 1.85);
+              hb.position.set(8.8, 3.02, hz);
               grp.add(hb);
+              var rim = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.03, 0.18), flatMat(0xd35400, 0.7));
+              rim.position.set(8.8, 2.86, hz + (hz < 0 ? 0.22 : -0.22));
+              grp.add(rim);
             });
             // 屋顶女儿墙
             [[2.95, -15.2, 23.3, 0.18], [2.95, 15.2, 23.3, 0.18]].forEach(function (e) {
