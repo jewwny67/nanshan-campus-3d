@@ -2137,6 +2137,13 @@
             }
             return false;
           }
+          function lampTooClose(x, z) {   // 两盏灯之间至少隔2.5个单位，不许挨着
+            for (var i = 0; i < lamps.length; i++) {
+              var ddx = lamps[i][0] - x, ddz = lamps[i][1] - z;
+              if (ddx * ddx + ddz * ddz < 6.25) return true;
+            }
+            return false;
+          }
           function lampRow(x0, z0, x1, z1, step, off) {
             var len = Math.hypot(x1 - x0, z1 - z0);
             var n = Math.floor(len / step);
@@ -2145,7 +2152,7 @@
               var cx = x0 + dx * i * step, cz = z0 + dz * i * step;
               [-off, off].forEach(function (s) {
                 var lx2 = cx - dz * s, lz2 = cz + dx * s;
-                if (!lampInWater(lx2, lz2) && !lampOnRoad(lx2, lz2)) lamps.push([lx2, lz2]);
+                if (!lampInWater(lx2, lz2) && !lampOnRoad(lx2, lz2) && !lampTooClose(lx2, lz2)) lamps.push([lx2, lz2]);
               });
             }
           }
