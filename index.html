@@ -2136,33 +2136,6 @@
           });
           scene.add(poles);
           scene.add(heads);
-          // 夜里光晕（Points 径向渐变）+ 地面光斑（加色圆片），亮度随夜晚系数
-          var glowPos = new Float32Array(lamps.length * 3);
-          lamps.forEach(function (p, i) {
-            glowPos[i * 3] = p[0]; glowPos[i * 3 + 1] = 0.62; glowPos[i * 3 + 2] = p[1];
-          });
-          var glowGeo = new THREE.BufferGeometry();
-          glowGeo.setAttribute('position', new THREE.BufferAttribute(glowPos, 3));
-          lampGlowMat = new THREE.PointsMaterial({
-            map: glowTex, color: 0xffd9a0, size: 2.6, sizeAttenuation: true,
-            transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending
-          });
-          var glowPts = new THREE.Points(glowGeo, lampGlowMat);
-          glowPts.renderOrder = 5;
-          scene.add(glowPts);
-          var poolGeo = new THREE.CircleGeometry(1.5, 20);
-          poolGeo.rotateX(-Math.PI / 2);
-          lampPoolMat = new THREE.MeshBasicMaterial({
-            color: 0xffc98a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending
-          });
-          var pools = new THREE.InstancedMesh(poolGeo, lampPoolMat, lamps.length);
-          lamps.forEach(function (p, i) {
-            dm.scale.set(1, 1, 1); dm.rotation.set(0, 0, 0);
-            dm.position.set(p[0], 0.24, p[1]); dm.updateMatrix();
-            pools.setMatrixAt(i, dm.matrix);
-          });
-          pools.renderOrder = 4;
-          scene.add(pools);
 
           // 长椅：座板 + 靠背 + 两条金属腿，可点性不参与（纯装饰）
           var seatGeo = new THREE.BoxGeometry(0.72, 0.05, 0.22);
@@ -2406,8 +2379,7 @@
           facadeMats.forEach(function (m) { m.emissiveIntensity = nf * 1.0; });
           signMats.forEach(function (m) { m.color.copy(SIGN_DAY).lerp(SIGN_NIGHT, nf); });
           lampHeadMat.emissiveIntensity = nf * 2.4;
-          if (lampGlowMat) lampGlowMat.opacity = nf * 0.85;
-          if (lampPoolMat) lampPoolMat.opacity = nf * 0.30;
+
           waterUniforms.uNight.value = nf;
           waterUniforms.uSky.value.copy(st.hor);
           waterUniforms.uSunDir.value.copy(SUN_DIR);
