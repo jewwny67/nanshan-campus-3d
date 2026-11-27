@@ -1788,8 +1788,8 @@
             runway2.receiveShadow = true;
             grp.add(runway2);
             // 二层楼板（架空层顶板）
-            var slab2 = new THREE.Mesh(new THREE.BoxGeometry(23.7, 0.24, 30.6), slabMat2);
-            slab2.position.set(1.15, 1.29, 0); // 主楼与东扩段合为一整块楼板（相对 -10.7..13.0）：西缘为看台后排遮挡外延，东缘含东扩段（用户要求建筑做成一个整体）
+            var slab2 = new THREE.Mesh(new THREE.BoxGeometry(25.3, 0.24, 30.6), slabMat2);
+            slab2.position.set(1.95, 1.29, 0); // 整块楼板（相对 -10.7..14.6）：西缘为看台后排遮挡外延，东缘与顶板、二层齐平，建筑做成一个整体
             slab2.castShadow = true; slab2.receiveShadow = true;
             slab2.userData.b = b; slab2.userData.grp = grp;
             grp.add(slab2); pickables.push(slab2);
@@ -1858,8 +1858,8 @@
             l2mat.userData.t = b.t; l2mat.userData.n = b.n; l2mat.userData.seed = Math.random();
             patchWindowOff(l2mat, 1);
             facadeMats.push(l2mat);
-            var l2 = new THREE.Mesh(new THREE.BoxGeometry(21.2, 0.54, 29.8), [l2mat, l2mat, slabMat2, hallBot, l2mat, l2mat]);
-            l2.position.set(2.3, 1.68, 0); // 主楼与东扩段二层合为一个整体（相对 -8.3..12.9）
+            var l2 = new THREE.Mesh(new THREE.BoxGeometry(23.3, 0.54, 30.6), [l2mat, l2mat, slabMat2, hallBot, l2mat, l2mat]);
+            l2.position.set(2.95, 1.68, 0); // 二层与上下楼板边缘齐平（相对 -8.7..14.6，南北 ±15.3），南立面不再凹凸
             l2.castShadow = true; l2.receiveShadow = true;
             l2.userData.b = b; l2.userData.grp = grp;
             grp.add(l2); pickables.push(l2);
