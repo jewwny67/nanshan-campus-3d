@@ -1788,8 +1788,8 @@
             runway2.receiveShadow = true;
             grp.add(runway2);
             // 二层楼板（架空层顶板）
-            var slab2 = new THREE.Mesh(new THREE.BoxGeometry(17.4, 0.24, 30.6), slabMat2);
-            slab2.position.set(0, 1.29, 0);
+            var slab2 = new THREE.Mesh(new THREE.BoxGeometry(19.4, 0.24, 30.6), slabMat2);
+            slab2.position.set(-1.0, 1.29, 0); // 西缘外延至相对 -10.7：看台后排上方遮挡（楼板）向外延伸一点（用户要求）
             slab2.castShadow = true; slab2.receiveShadow = true;
             slab2.userData.b = b; slab2.userData.grp = grp;
             grp.add(slab2); pickables.push(slab2);
