@@ -1865,8 +1865,8 @@
             grp.add(l2); pickables.push(l2);
             // （东扩段二层已并入 l2 整体，不再单独建体量）
             // 顶层楼板（屋顶运动场地面）
-            var roofSlab = new THREE.Mesh(new THREE.BoxGeometry(21.8, 0.21, 30.6), slabMat2);
-            roofSlab.position.set(2.2, 2.06, 0); // 顶层楼板主楼与东扩段合为一整块，顶面高度一致（相对 -8.7..13.1）
+            var roofSlab = new THREE.Mesh(new THREE.BoxGeometry(21.8, 0.21, 32.6), slabMat2);
+            roofSlab.position.set(2.2, 2.06, 1.0); // 顶层楼板主楼与东扩段合为一整块，顶面高度一致（相对 -8.7..13.1）；南缘向外延伸（用户要求）
             roofSlab.castShadow = true; roofSlab.receiveShadow = true;
             roofSlab.userData.b = b; roofSlab.userData.grp = grp;
             grp.add(roofSlab); pickables.push(roofSlab);
