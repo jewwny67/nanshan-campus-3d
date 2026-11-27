@@ -1080,37 +1080,70 @@
         return geo;
       }
 
-        // 龙山：西/西南大山，多峰起伏，最高处约3.5—4个单位（约8—10层楼高）
-        (function () {
-          function peak(x, z, r, sy, color) {
-            var m = new THREE.Mesh(ridgeGeo(r, 56, 38, x * 0.7 + z), forestMat(color));
-            m.scale.set(1.06, sy, 0.94);
-            m.rotation.y = (x + z) * 0.05;
-            m.position.set(x, 0, z);
-            m.castShadow = true; m.receiveShadow = true;
-            scene.add(m);
+      function massifGeo(peaks, x0, x1, z0, z1, segX, segZ, seed, maxH) {
+        // 整片山体高度场：各峰高斯隆起叠加，峰间连续无缝；噪声随高度增强，平地保持平整
+        var w = x1 - x0, d = z1 - z0;
+        var geo = new THREE.PlaneGeometry(w, d, segX, segZ);
+        var pos = geo.attributes.position;
+        var cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+        var sd = seed || 1;
+        for (var i = 0; i < pos.count; i++) {
+          var wx = pos.getX(i) + cx, wz = -pos.getY(i) + cz;
+          var h = 0;
+          for (var pi = 0; pi < peaks.length; pi++) {
+            var pk = peaks[pi];
+            var dx = wx - pk[0], dz = wz - pk[1];
+            var sig = pk[2] * 0.52;
+            h += pk[2] * pk[3] * Math.exp(-(dx * dx + dz * dz) / (2 * sig * sig));
           }
-          peak(-54, 26, 14, 0.62, 0xffffff);   // 主峰，顶高约5.5（约55m，按ASTER高程）
-          peak(-66, 10, 11.5, 0.55, 0xf3f7ee); // 北峰，顶高约4.0（约40m）
-          peak(-44, 42, 10.5, 0.52, 0xffffff); // 南峰，顶高约3.5（约35m）
-          peak(-72, 40, 13, 0.48, 0xe9efe2);   // 西南延伸山脊
-          peak(-86, 2, 15, 0.43, 0xffffff);    // 西侧山脊
-          peak(-38, 16.5, 8, 0.38, 0xf3f7ee);  // 东侧山脚（临湖、飞瀑背后；2026-11-27 随仲申书院10西移同步西挪：山东缘退到 x=-30，与宿舍楼西墙留1.2，不再压楼）
+          var nz = 0.10 * Math.sin(wx * 0.30 + sd) * Math.cos(wz * 0.26 + sd * 1.7) +
+                   0.06 * Math.sin((wx * 0.7 - wz * 0.5) * 0.5 + sd * 2.3) +
+                   0.03 * Math.sin(wx * 1.6 + wz * 1.2 + sd * 3.1);
+          h = h * (1 + nz * Math.min(1, h / 1.5));
+          pos.setZ(i, h - 0.06);
+        }
+        geo.rotateX(-Math.PI / 2);
+        geo.translate(cx, 0, cz);
+        geo.computeVertexNormals();
+        var nor = geo.attributes.normal;
+        var cols = new Float32Array(pos.count * 3);
+        var cLow = [0.58, 0.74, 0.52], cHigh = [0.96, 1.0, 0.78], cRock = [0.88, 0.84, 0.76];
+        var v = new THREE.Vector3();
+        for (var j = 0; j < pos.count; j++) {
+          v.fromBufferAttribute(pos, j);
+          var hN = Math.max(0, Math.min(1, v.y / maxH));
+          var slope = 1 - Math.max(0, nor.getY(j));
+          var rockMix = Math.max(0, Math.min(1, (slope - 0.42) * 2.2));
+          var jitter = 0.92 + 0.16 * Math.abs(Math.sin(v.x * 12.9898 + v.z * 78.233 + sd));
+          for (var k = 0; k < 3; k++) {
+            var c = cLow[k] + (cHigh[k] - cLow[k]) * hN;
+            c = c + (cRock[k] - c) * rockMix;
+            cols[j * 3 + k] = c * jitter;
+          }
+        }
+        geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+        return geo;
+      }
+
+        // 龙山：整片山体一张高度场，多峰叠加成连续山峦，峰间无缝隙
+        (function () {
+          var peaks = [
+            [-54, 26, 14, 0.62], [-66, 10, 11.5, 0.55], [-44, 42, 10.5, 0.52],
+            [-72, 40, 13, 0.48], [-86, 2, 15, 0.43], [-38, 16.5, 8, 0.38]
+          ];
+          var m = new THREE.Mesh(massifGeo(peaks, -102, -24, -18, 58, 96, 92, 7, 9), forestMat(0xffffff));
+          m.castShadow = true; m.receiveShadow = true;
+          scene.add(m);
         })();
 
-        // 南山：东侧山体，略低于龙山，同样多峰起伏
+        // 南山：东侧山体，整片高度场，略低于龙山
         (function () {
-          function peak2(x, z, r, sy, color) {
-            var m = new THREE.Mesh(ridgeGeo(r, 50, 34, x * 0.9 + z), forestMat(color));
-            m.scale.set(0.96, sy, 1.04);
-            m.rotation.y = (x - z) * 0.05;
-            m.position.set(x, 0, z);
-            m.castShadow = true; m.receiveShadow = true;
-            scene.add(m);
-          }
-          peak2(67, -2, 10.5, 0.42, 0xffffff); // 主峰，顶高约2.5（约25m，按ASTER高程）
-          peak2(73, 13, 8.5, 0.40, 0xf3f7ee);
-          peak2(61, -15, 7.5, 0.37, 0xffffff);
+          var peaks = [
+            [67, -2, 10.5, 0.42], [73, 13, 8.5, 0.40], [61, -15, 7.5, 0.37]
+          ];
+          var m = new THREE.Mesh(massifGeo(peaks, 44, 92, -32, 28, 64, 76, 13, 4.6), forestMat(0xffffff));
+          m.castShadow = true; m.receiveShadow = true;
+          scene.add(m);
         })();
 
         // 龙山飞瀑（人造瀑布）：在仲申书院10幢的西侧——阳明湖西南端、龙山山脚临湖的岩壁上
