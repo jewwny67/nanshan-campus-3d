@@ -1886,11 +1886,32 @@
             if (x > -16 && x < -4 && z > 42 && z < 60 && Math.abs((x + 10.4) * 0.878 + (z - 51) * 0.479) < 2.6) return true; // 文澜桥斜路
             return false;
           }
+          // 随机树只种在草地区域内（与地面贴图的绿色矩形一致，世界坐标 [cx,cz,w,d]），不种到白色铺装上
+          var GRASS_RECTS = [
+            [-24, -4, 30, 62], [6, -41, 52, 24], [18, -16.5, 58, 9], [13, -0.5, 40, 40],
+            [10, 29, 62, 30], [10, 51, 40, 18], [48, 24, 30, 26], [52, -28, 26, 20],
+            [-15, 74, 44, 12], [-55, -40, 34, 24], [-30, -45.25, 30, 19.5],
+            [-8.4, -6, 1.8, 44], [6.5, -21.9, 25, 16]
+          ];
+          var grassTotal = 0;
+          GRASS_RECTS.forEach(function (r) { grassTotal += r[2] * r[3]; });
+          function inGrass(x, z) {
+            for (var i = 0; i < GRASS_RECTS.length; i++) {
+              var r = GRASS_RECTS[i];
+              if (Math.abs(x - r[0]) < r[2] / 2 && Math.abs(z - r[1]) < r[3] / 2) return true;
+            }
+            return false;
+          }
           var tries = 0;
-          while (spots.length < 230 && tries < 7000) {
+          while (spots.length < 230 && tries < 9000) {
             tries++;
-            var x = -92 + rnd() * 180, z = -54 + rnd() * 136;
-            if (!blocked(x, z)) spots.push([x, z, 0.8 + rnd() * 0.55]);
+            var pick = rnd() * grassTotal, gr = GRASS_RECTS[0];
+            for (var gi = 0; gi < GRASS_RECTS.length; gi++) {
+              pick -= GRASS_RECTS[gi][2] * GRASS_RECTS[gi][3];
+              if (pick <= 0) { gr = GRASS_RECTS[gi]; break; }
+            }
+            var x = gr[0] + (rnd() - 0.5) * gr[2], z = gr[1] + (rnd() - 0.5) * gr[3];
+            if (inGrass(x, z) && !blocked(x, z)) spots.push([x, z, 0.8 + rnd() * 0.55]);
           }
           // 主湖湖边一圈树（沿新湖岸线：南北长条，南端到飞瀑一带为止）
           for (var a = 0; a < Math.PI * 2; a += Math.PI / 7) {
