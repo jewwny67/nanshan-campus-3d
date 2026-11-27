@@ -1014,22 +1014,18 @@
           isle.position.set(-13.5, 0.1, -8);
           isle.receiveShadow = true;
           scene.add(isle);
-          var isleHill = new THREE.Mesh(new THREE.SphereGeometry(1.15, 20, 14), flatMat(0x63984a));
-          isleHill.scale.set(1.2, 0.32, 1.6);
-          isleHill.position.set(-13.5, 0.02, -8);
-          isleHill.castShadow = true; isleHill.receiveShadow = true;
-          scene.add(isleHill);
+          // 湖心岛做平地，不再有山坡土丘（亭子不再半埋）
           (function () {
             var postM = flatMat(0x6e4f30, 0.9);
             [[-0.55, -0.55], [0.55, -0.55], [-0.55, 0.55], [0.55, 0.55]].forEach(function (o) {
               var p = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.62, 0.09), postM);
-              p.position.set(-13.5 + o[0], 0.36, -8.9 + o[1]);
+              p.position.set(-13.5 + o[0], 0.41, -8.9 + o[1]);
               p.castShadow = true;
               scene.add(p);
             });
             var proof = new THREE.Mesh(new THREE.ConeGeometry(1.05, 0.5, 4), flatMat(0x7a4a34, 0.9));
             proof.rotation.y = Math.PI / 4;
-            proof.position.set(-13.5, 0.92, -8.9);
+            proof.position.set(-13.5, 0.97, -8.9);
             proof.castShadow = true;
             scene.add(proof);
           })();
