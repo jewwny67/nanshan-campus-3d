@@ -2087,19 +2087,30 @@
           color: 0xfff1d0, emissive: new THREE.Color(0xffcf8a), emissiveIntensity: 0,
           roughness: 0.55, metalness: 0
         });
+        var lampGlowMat = null, lampPoolMat = null;   // 路灯夜里光晕与地面光斑（setTime 里调亮度）
         var benchSpots = [
           [10.55, -2, -1.57], [10.55, 4, -1.57],
           [-8.15, -14, 1.57], [-8.15, 2, 1.57],
           [1.6, 19.05, 0], [14.6, 19.05, 0]
         ];
         (function () {
-          // 路灯沿元培南路、田径场东侧、宿舍区北路与南路布置，数量控制在一打
-          var lamps = [
-            [-8.15, -22], [-8.15, -12], [-8.15, -2], [-8.15, 8],
-            [10.9, -6], [10.9, 2], [10.9, 10],
-            [-14, 18.7], [4, 18.7], [22, 18.7],
-            [-24, 42.3], [24, 42.3]
-          ];
+          // 路灯沿主要道路等距布置（每6个单位一盏、两侧交替），不再是零星几盏
+          var lamps = [];
+          function lampRow(x0, z0, x1, z1, step, off) {
+            var len = Math.hypot(x1 - x0, z1 - z0);
+            var n = Math.floor(len / step);
+            var dx = (x1 - x0) / len, dz = (z1 - z0) / len;
+            for (var i = 0; i <= n; i++) {
+              var s = (i % 2 === 0 ? 1 : -1) * off;
+              lamps.push([x0 + dx * i * step - dz * s, z0 + dz * i * step + dx * s]);
+            }
+          }
+          lampRow(-5.9, -48, -5.9, 48, 6, 1.7);     // 元培南路
+          lampRow(-38, -29.2, 50, -29.2, 6, 1.5);   // 寅初路
+          lampRow(21, -28, 21, -16, 6, 1.5);        // 景岳路（体育馆以北段）
+          lampRow(-26, 17.4, 42, 17.4, 6, 1.5);     // 宿舍区北路
+          lampRow(-26, 40.6, 46, 40.6, 6, 1.5);     // 宿舍区南路
+          lampRow(-6, -13.5, 20, -13.5, 6, 1.4);    // 田径场北侧横路
           var poleGeo = new THREE.CylinderGeometry(0.035, 0.05, 0.56, 6);
           var headGeo = new THREE.BoxGeometry(0.17, 0.055, 0.17);
           var poleMat = new THREE.MeshStandardMaterial({ color: 0x6f7880, roughness: 0.55, metalness: 0.35 });
@@ -2117,6 +2128,33 @@
           });
           scene.add(poles);
           scene.add(heads);
+          // 夜里光晕（Points 径向渐变）+ 地面光斑（加色圆片），亮度随夜晚系数
+          var glowPos = new Float32Array(lamps.length * 3);
+          lamps.forEach(function (p, i) {
+            glowPos[i * 3] = p[0]; glowPos[i * 3 + 1] = 0.62; glowPos[i * 3 + 2] = p[1];
+          });
+          var glowGeo = new THREE.BufferGeometry();
+          glowGeo.setAttribute('position', new THREE.BufferAttribute(glowPos, 3));
+          lampGlowMat = new THREE.PointsMaterial({
+            map: glowTex, color: 0xffd9a0, size: 2.6, sizeAttenuation: true,
+            transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending
+          });
+          var glowPts = new THREE.Points(glowGeo, lampGlowMat);
+          glowPts.renderOrder = 5;
+          scene.add(glowPts);
+          var poolGeo = new THREE.CircleGeometry(1.5, 20);
+          poolGeo.rotateX(-Math.PI / 2);
+          lampPoolMat = new THREE.MeshBasicMaterial({
+            color: 0xffc98a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending
+          });
+          var pools = new THREE.InstancedMesh(poolGeo, lampPoolMat, lamps.length);
+          lamps.forEach(function (p, i) {
+            dm.scale.set(1, 1, 1); dm.rotation.set(0, 0, 0);
+            dm.position.set(p[0], 0.24, p[1]); dm.updateMatrix();
+            pools.setMatrixAt(i, dm.matrix);
+          });
+          pools.renderOrder = 4;
+          scene.add(pools);
 
           // 长椅：座板 + 靠背 + 两条金属腿，可点性不参与（纯装饰）
           var seatGeo = new THREE.BoxGeometry(0.72, 0.05, 0.22);
@@ -2359,7 +2397,9 @@
           var nf = Math.max(0, Math.min(1, st.night));
           facadeMats.forEach(function (m) { m.emissiveIntensity = nf * 1.0; });
           signMats.forEach(function (m) { m.color.copy(SIGN_DAY).lerp(SIGN_NIGHT, nf); });
-          lampHeadMat.emissiveIntensity = nf * 1.4;
+          lampHeadMat.emissiveIntensity = nf * 2.4;
+          if (lampGlowMat) lampGlowMat.opacity = nf * 0.85;
+          if (lampPoolMat) lampPoolMat.opacity = nf * 0.30;
           waterUniforms.uNight.value = nf;
           waterUniforms.uSky.value.copy(st.hor);
           waterUniforms.uSunDir.value.copy(SUN_DIR);
