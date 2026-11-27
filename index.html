@@ -682,12 +682,12 @@
             var curb = Math.max(2.5, Math.min(widPx * 0.22, 8));
             function band(side) {
               if (alongX) {
-                g.fillStyle = '#c8c2b6';
+                g.fillStyle = '#ddd6c8';
                 g.fillRect(0, side ? chh - curb : 0, cw, curb);
                 g.fillStyle = 'rgba(0,0,0,0.18)';
                 g.fillRect(0, side ? chh - curb : curb - 1.2, cw, 1.2);
               } else {
-                g.fillStyle = '#c8c2b6';
+                g.fillStyle = '#ddd6c8';
                 g.fillRect(side ? cw - curb : 0, 0, curb, chh);
                 g.fillStyle = 'rgba(0,0,0,0.18)';
                 g.fillRect(side ? cw - curb : curb - 1.2, 0, 1.2, chh);
@@ -710,7 +710,7 @@
             // 中心虚线
             var lw = Math.max(1.8, widPx * 0.05);
             var dash = Math.max(7, lenPx * 0.045), gap = dash * 1.5;
-            g.fillStyle = 'rgba(240,236,224,0.8)';
+            g.fillStyle = 'rgba(245,242,232,0.95)';
             for (var dp = 4; dp < lenPx; dp += dash + gap) {
               if (alongX) g.fillRect(dp, widPx / 2 - lw / 2, Math.min(dash, lenPx - dp), lw);
               else g.fillRect(widPx / 2 - lw / 2, dp, lw, Math.min(dash, lenPx - dp));
@@ -2164,10 +2164,24 @@
             [-26, 46, 39.7, 41.5], [-20.5, -18.5, 15.9, 41.5], [34, 46, 28.1, 29.9],
             [6.85, 8.65, 18, 39], [20.1, 21.9, 18, 39], [33.1, 34.9, 17.4, 40.6]
           ];
+          var ROAD_SEGS = [   // 斜路：[x0,z0,x1,z1,半宽]
+            [21.5, -27.2, 36.1, -44.4, 1.2], [33.5, -43.0, 40.9, -49.0, 1.7],
+            [9.9, -52.8, 35.1, -44.4, 0.9], [-5.2, -26.3, 3.2, -54.6, 1.1],
+            [-1.8, -40.5, 11.0, -53.6, 1.1], [-14.1, 57.8, -6.7, 44.2, 1.1],
+            [36.8, -12.1, 62.6, -44.1, 1.1], [-58.2, -80.9, 122.2, -21.1, 2.25]
+          ];
           function lampOnRoad(x, z) {
             for (var i = 0; i < ROAD_RECTS.length; i++) {
               var r = ROAD_RECTS[i];
               if (x > r[0] - 0.05 && x < r[1] + 0.05 && z > r[2] - 0.05 && z < r[3] + 0.05) return true;
+            }
+            for (var j = 0; j < ROAD_SEGS.length; j++) {
+              var s = ROAD_SEGS[j];
+              var vx = s[2] - s[0], vz = s[3] - s[1];
+              var tt = ((x - s[0]) * vx + (z - s[1]) * vz) / (vx * vx + vz * vz);
+              tt = Math.max(0, Math.min(1, tt));
+              var qx = s[0] + vx * tt - x, qz = s[1] + vz * tt - z;
+              if (qx * qx + qz * qz < (s[4] + 0.05) * (s[4] + 0.05)) return true;
             }
             return false;
           }
