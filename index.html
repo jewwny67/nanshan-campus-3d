@@ -1812,7 +1812,7 @@
             roof.castShadow = true;
             roof.userData.b = b; roof.userData.grp = grp;
             grp.add(roof); pickables.push(roof);
-            addLabel(b.n, new THREE.Vector3(b.x, 1.9, b.z)), 'lbl-' + b.t);
+            addLabel(b.n, new THREE.Vector3(b.x, 1.9, b.z), 'lbl-' + b.t);
             return;
           }
           if (b.complex) {
@@ -2004,7 +2004,7 @@
               pw2.castShadow = true;
               grp.add(pw2);
             });
-            addLabel(b.n, new THREE.Vector3(b.x, 2.85, b.z)), 'lbl-' + b.t);
+            addLabel(b.n, new THREE.Vector3(b.x, 2.85, b.z), 'lbl-' + b.t);
             return;
           }
           if (b.pilotis) {
@@ -2056,7 +2056,7 @@
             apron.position.set(0, 0.032, 0);
             apron.receiveShadow = true;
             grp.add(apron);
-            addLabel(b.n, new THREE.Vector3(b.x, colH + 0.75, b.z)), 'lbl-' + b.t);
+            addLabel(b.n, new THREE.Vector3(b.x, colH + 0.75, b.z), 'lbl-' + b.t);
             return;
           }
           if (b.arcGate) {
@@ -2134,7 +2134,7 @@
               sign.rotation.y = Math.atan2(-Math.cos(ca2), -Math.sin(ca2)); // 字面正对广场圆心方向
               grp.add(sign);
             });
-            addLabel(b.n, new THREE.Vector3(b.x + (b.ldx || 0), h + 0.7, b.z + (b.ldz || 0)));
+            addLabel(b.n, new THREE.Vector3(b.x + (b.ldx || 0), h + 0.7, b.z + (b.ldz || 0)), 'lbl-' + b.t);
             return;
           }
           if (b.arc && !b.parts) {
@@ -2176,7 +2176,7 @@
             grp.add(mesh);
             pickables.push(mesh);
           });
-          addLabel(b.n, new THREE.Vector3(b.x + (b.ldx || 0), h + 0.7, b.z + (b.ldz || 0)));
+          addLabel(b.n, new THREE.Vector3(b.x + (b.ldx || 0), h + 0.7, b.z + (b.ldz || 0)), 'lbl-' + b.t);
         });
 
         /* ---------------- 树木（InstancedMesh） ---------------- */
