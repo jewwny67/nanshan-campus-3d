@@ -1033,6 +1033,31 @@
           isle.receiveShadow = true;
           scene.add(isle);
           // 湖心岛做平地，不再有山坡土丘（亭子不再半埋）
+          // 小木桥：湖心岛通往西岸
+          (function () {
+            var woodM = flatMat(0x8a6a44, 0.9);
+            var woodD = flatMat(0x6e5233, 0.9);
+            var deckW = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.08, 0.72), woodM);
+            deckW.position.set(-16.85, 0.17, -8);
+            deckW.castShadow = true; deckW.receiveShadow = true;
+            scene.add(deckW);
+            [-0.33, 0.33].forEach(function (zo) {
+              var railW = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.05, 0.05), woodD);
+              railW.position.set(-16.85, 0.42, -8 + zo);
+              railW.castShadow = true;
+              scene.add(railW);
+              for (var px = -18.4; px <= -15.3; px += 0.78) {
+                var postW = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.26, 0.05), woodD);
+                postW.position.set(px, 0.29, -8 + zo);
+                scene.add(postW);
+              }
+            });
+            [-17.6, -16.1].forEach(function (px) {
+              var pierW = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.3, 0.6), woodD);
+              pierW.position.set(px, 0.0, -8);
+              scene.add(pierW);
+            });
+          })();
           (function () {
             var postM = flatMat(0x6e4f30, 0.9);
             [[-0.55, -0.55], [0.55, -0.55], [-0.55, 0.55], [0.55, 0.55]].forEach(function (o) {
@@ -1430,7 +1455,7 @@
         (function () {
           var g = new THREE.PlaneGeometry(2.2, 38.5);
           g.rotateX(-Math.PI / 2);
-          var m = new THREE.Mesh(g, flatMat(0x4d5259));
+          var m = new THREE.Mesh(g, roadMaterial(2.2, 38.5));   // 与其他马路一样的人行道+虚线贴图
           m.rotation.y = -0.68;
           m.position.set(49.7, 0.16, -28.1);
           m.receiveShadow = true;
@@ -2184,6 +2209,32 @@
             }
             return false;
           }
+          function lampInBuilding(x, z) {   // 灯不许进楼体/停车场
+            for (var i = 0; i < BUILDINGS.length; i++) {
+              var b = BUILDINGS[i];
+              var dx = x - b.x, dz = z - b.z;
+              var rot = b.rot || 0;
+              var c = Math.cos(-rot), s = Math.sin(-rot);
+              var lx = dx * c - dz * s, lz = dx * s + dz * c;
+              if (b.parts) {
+                for (var j = 0; j < b.parts.length; j++) {
+                  var pt = b.parts[j];
+                  var px = lx - pt.dx, pz = lz - pt.dz;
+                  var pr = pt.r || 0;
+                  var pc = Math.cos(-pr), ps = Math.sin(-pr);
+                  var qx = px * pc - pz * ps, qz = px * ps + pz * pc;
+                  if (Math.abs(qx) < pt.w / 2 + 0.25 && Math.abs(qz) < pt.d / 2 + 0.25) return true;
+                }
+              } else if (Math.abs(lx) < b.w / 2 + 0.25 && Math.abs(lz) < b.d / 2 + 0.25) return true;
+            }
+            var PADS2 = [[6.5, 2.8, 38, -32.2], [5, 8, 40, 33], [7, 2.6, -63, -48.3], [5.5, 3, -55.5, -48.3],
+              [5, 7, -40.3, -44], [5, 7, -40.3, -36.5], [4.5, 2, -23, -27.6], [5, 4, 25, 47],
+              [5, 3, -20, 73.5], [5, 3, -2, 73.5]];
+            for (var k = 0; k < PADS2.length; k++) {
+              if (Math.abs(x - PADS2[k][2]) < PADS2[k][0] / 2 && Math.abs(z - PADS2[k][3]) < PADS2[k][1] / 2) return true;
+            }
+            return false;
+          }
           function lampTooClose(x, z) {   // 两盏灯之间至少隔2.5个单位，不许挨着
             for (var i = 0; i < lamps.length; i++) {
               var ddx = lamps[i][0] - x, ddz = lamps[i][1] - z;
@@ -2199,7 +2250,7 @@
               var cx = x0 + dx * i * step, cz = z0 + dz * i * step;
               [-off, off].forEach(function (s) {
                 var lx2 = cx - dz * s, lz2 = cz + dx * s;
-                if (!lampInWater(lx2, lz2) && !lampOnRoad(lx2, lz2) && !lampTooClose(lx2, lz2)) lamps.push([lx2, lz2]);   // 椅子让路灯，不删灯
+                if (!lampInWater(lx2, lz2) && !lampOnRoad(lx2, lz2) && !lampInBuilding(lx2, lz2) && !lampTooClose(lx2, lz2)) lamps.push([lx2, lz2]);   // 椅子让路灯，不删灯
               });
             }
           }
