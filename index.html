@@ -920,16 +920,19 @@
           uDeep: { value: new THREE.Color(0x1d5563) },
           uShallow: { value: new THREE.Color(0x4f9199) },
           uSky: { value: new THREE.Color(0x9dc0dc) },
-          uNight: { value: 0 }
+          uNight: { value: 0 },
+          uSunDir: { value: new THREE.Vector3(0, 1, 0) }
         };
         var waterMat = new THREE.ShaderMaterial({
           uniforms: waterUniforms,
           side: THREE.DoubleSide,
           vertexShader: [
             'varying vec3 vWorld;',
+            'varying vec3 vViewDir;',
             'void main() {',
             '  vec4 wp = modelMatrix * vec4(position, 1.0);',
             '  vWorld = wp.xyz;',
+            '  vViewDir = cameraPosition - wp.xyz;',
             '  gl_Position = projectionMatrix * viewMatrix * wp;',
             '}'
           ].join('\n'),
@@ -939,16 +942,26 @@
             'uniform vec3 uShallow;',
             'uniform vec3 uSky;',
             'uniform float uNight;',
+            'uniform vec3 uSunDir;',
             'varying vec3 vWorld;',
+            'varying vec3 vViewDir;',
             'void main() {',
             '  float t = uTime;',
             '  float w1 = sin(vWorld.x * 0.22 + t * 0.50) * 0.5 + sin(vWorld.z * 0.17 - t * 0.42) * 0.5;',
             '  float w2 = sin((vWorld.x + vWorld.z) * 0.10 - t * 0.24) * 0.5 + 0.5;',
-            '  float n = w1 * 0.62 + (w2 - 0.5) * 0.38;',
+            '  float w3 = sin(vWorld.x * 1.35 - t * 0.9) * sin(vWorld.z * 1.15 + t * 0.7);',
+            '  float w4 = sin((vWorld.x * 0.6 - vWorld.z * 0.8) * 2.3 + t * 1.3);',
+            '  float n = w1 * 0.55 + (w2 - 0.5) * 0.33 + w3 * 0.09 + w4 * 0.06;',
+            '  vec3 V = normalize(vViewDir);',
+            '  float fres = pow(1.0 - max(V.y, 0.0), 3.0);',
             '  vec3 col = mix(uDeep, uShallow, clamp(0.44 + 0.13 * n, 0.0, 1.0));',
-            '  col = mix(col, uSky, clamp(0.30 + 0.10 * (w2 - 0.5) * 2.0, 0.0, 1.0));',
+            '  col = mix(col, uSky, clamp(0.22 + 0.55 * fres + 0.08 * (w2 - 0.5) * 2.0, 0.0, 1.0));',
+            '  vec3 N = normalize(vec3(w3 * 0.22 + w4 * 0.10, 1.0, w1 * 0.16));',
+            '  vec3 H = normalize(V + normalize(uSunDir));',
+            '  float glint = pow(max(dot(N, H), 0.0), 90.0);',
             '  float sp = smoothstep(0.80, 1.0, sin(vWorld.x * 0.55 + vWorld.z * 0.22 + t * 0.75) * 0.5 + 0.5);',
             '  col += vec3(0.16, 0.20, 0.22) * sp * (1.0 - uNight * 0.7);',
+            '  col += vec3(1.0, 0.95, 0.85) * glint * 0.55 * (1.0 - uNight);',
             '  col *= mix(1.0, 0.42, uNight);',
             '  gl_FragColor = vec4(col, 1.0);',
             '}'
@@ -1874,7 +1887,7 @@
             return false;
           }
           var tries = 0;
-          while (spots.length < 130 && tries < 3000) {
+          while (spots.length < 230 && tries < 7000) {
             tries++;
             var x = -92 + rnd() * 180, z = -54 + rnd() * 136;
             if (!blocked(x, z)) spots.push([x, z, 0.8 + rnd() * 0.55]);
@@ -2225,6 +2238,7 @@
           lampHeadMat.emissiveIntensity = nf * 1.4;
           waterUniforms.uNight.value = nf;
           waterUniforms.uSky.value.copy(st.hor);
+          waterUniforms.uSunDir.value.copy(SUN_DIR);
         }
         timeSlider.addEventListener('input', function () { setTime(parseFloat(timeSlider.value)); });
         setTime(10);
@@ -2307,6 +2321,8 @@
               if (camAnim.t >= 1) camAnim = null;
             }
             controls.update();
+            skyDome.position.copy(camera.position);   // 天空穹顶跟随相机，避免远侧被远裁剪面切出黑洞
+            sunSprite.position.copy(camera.position).addScaledVector(SUN_DIR, 388);
             waterUniforms.uTime.value += dt;
             if (compassDial) {
               var azDeg = Math.atan2(camera.position.x - controls.target.x, camera.position.z - controls.target.z) * 180 / Math.PI;
