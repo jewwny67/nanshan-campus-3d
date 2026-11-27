@@ -1568,7 +1568,7 @@
         }
 
         function litRatioFor(t) {
-          if (t === 'teach') return 0;      // 教学楼夜里全关灯
+          if (t === 'teach') return 0.35;   // 教学楼傍晚亮灯（晚课/自习），20点后由时间门控关灯
           if (t === 'dorm') return 0.54;    // 宿舍正常亮灯
           if (t === 'life') return 0.30;    // 食堂等生活建筑
           if (t === 'sport') return 0.15;   // 体育场馆
@@ -1608,6 +1608,7 @@
             // 综合体育建筑群：一层架空层（场馆体量 + 100米跑道 + 穿楼道路）、二层体量、顶层屋顶运动场
             var ctex = makeFacade(type.wall, type.win, 3, 4242, litRatioFor(b.t));
             var hallMat = new THREE.MeshStandardMaterial({ map: ctex.map, emissiveMap: ctex.emissiveMap, emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0, roughness: 0.85 });
+            hallMat.userData.t = b.t;
             facadeMats.push(hallMat);
             var hallRoof = roofMaterial(type.roof, 0.88);
             var hallBot = flatMat('#5a5348', 1);
@@ -1698,6 +1699,7 @@
             // 二层体量（拳击馆、网球场地；只建楼层本身，两个场馆在层内的具体方位未定、不分位置）
             var l2tex = makeFacade(type.wall, type.win, 1, 5151, litRatioFor(b.t));
             var l2mat = new THREE.MeshStandardMaterial({ map: l2tex.map, emissiveMap: l2tex.emissiveMap, emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0, roughness: 0.9 });
+            l2mat.userData.t = b.t;
             facadeMats.push(l2mat);
             var l2 = new THREE.Mesh(new THREE.BoxGeometry(16.6, 0.54, 29.8), [l2mat, l2mat, slabMat2, hallBot, l2mat, l2mat]);
             l2.position.set(0, 1.68, 0);
@@ -1827,6 +1829,7 @@
               emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0,
               roughness: 0.85, metalness: 0
             });
+            gside.userData.t = b.t;
             facadeMats.push(gside);
             var gsideNoLight = new THREE.MeshStandardMaterial({
               map: gtex.map, roughness: 0.85, metalness: 0
@@ -1910,6 +1913,7 @@
             emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0,
             roughness: 0.85, metalness: 0
           });
+          side.userData.t = b.t;
           facadeMats.push(side);
           var roofM = roofMaterial(type.roof, 0.9);
           var botM = flatMat('#5a5348', 1);
@@ -2387,7 +2391,14 @@
 
           // 夜间：窗户亮灯 + 路灯发光 + 水面转深
           var nf = Math.max(0, Math.min(1, st.night));
-          facadeMats.forEach(function (m) { m.emissiveIntensity = nf * 1.0; });
+          var teachGate = (function () {
+            var gIn = Math.max(0, Math.min(1, (h - 17) / 1.5));       // 17:00-18:30 渐亮（天黑开灯）
+            var gOut = 1 - Math.max(0, Math.min(1, (h - 20) / 0.5));  // 20:00-20:30 关灯
+            return gIn * gOut;
+          })();
+          facadeMats.forEach(function (m) {
+            m.emissiveIntensity = nf * (m.userData.t === 'teach' ? teachGate : 1.0);
+          });
           signMats.forEach(function (m) { m.color.copy(SIGN_DAY).lerp(SIGN_NIGHT, nf); });
           lampHeadMat.emissiveIntensity = nf * 2.0;   // 灯头暖光、无光圈，微亮一点
 
