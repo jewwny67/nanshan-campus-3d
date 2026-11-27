@@ -2571,7 +2571,13 @@
         var pointer = new THREE.Vector2();
         var selBox = new THREE.Box3Helper(new THREE.Box3(), 0xffc46b);
         selBox.visible = false;
+        selBox.material.transparent = true;
         scene.add(selBox);
+        var selMarker = new THREE.Mesh(new THREE.ConeGeometry(0.9, 2.4, 4), new THREE.MeshBasicMaterial({ color: 0xffc46b }));
+        selMarker.rotation.x = Math.PI;
+        selMarker.visible = false;
+        scene.add(selMarker);
+        var selMarkerBaseY = 0;
         var selected = null;
 
         var infoCard = document.getElementById('infoCard');
@@ -2585,6 +2591,7 @@
           if (!mesh) {
             selected = null;
             selBox.visible = false;
+            selMarker.visible = false;
             infoCard.classList.remove('open');
             return;
           }
@@ -2594,6 +2601,10 @@
           box.expandByScalar(0.35);
           selBox.box.copy(box);
           selBox.visible = true;
+          var sfp = (typeof focusPoint === 'function') ? focusPoint(b) : [b.x, b.z];
+          selMarkerBaseY = box.max.y + 2.6;
+          selMarker.position.set(sfp[0], selMarkerBaseY, sfp[1]);
+          selMarker.visible = true;
           infoType.textContent = TYPE[b.t].label;
           var chipColors = { teach: '#ead9a8', dorm: '#afc4d4', life: '#f0a35e', sport: '#9cc8e8', gate: '#c23b2e' };
           infoType.style.background = chipColors[b.t] || '';
@@ -3015,6 +3026,11 @@
         var lastT = performance.now();
         function animate(now) {
           requestAnimationFrame(animate);
+          if (selMarker.visible) {
+            selMarker.position.y = selMarkerBaseY + Math.sin(now * 0.004) * 0.35;
+            selMarker.rotation.y = now * 0.0015;
+            selBox.material.opacity = 0.55 + 0.45 * Math.sin(now * 0.006);
+          }
           try {
             var dt = Math.min((now - lastT) / 1000, 0.05);
             lastT = now;
