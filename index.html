@@ -368,7 +368,14 @@
           { n: '仲申书院1', x: 27, z: 21.5, w: 10, d: 4.8, f: 6, hm: 19, t: 'dorm', note: '学生宿舍，仲申书院的同学住在这里。' },
           { n: '仲申书院2', x: 27, z: 29, w: 10, d: 4.8, f: 6, hm: 19, t: 'dorm', note: '学生宿舍，仲申书院的同学住在这里。' },
           { n: '仲申书院3', x: 27, z: 36, w: 10, d: 4.8, f: 6, hm: 19, t: 'dorm', note: '学生宿舍，仲申书院的同学住在这里。' },
-          { n: '仲申书院10', x: -21, z: 13.5, w: 9, d: 4.5, f: 6, hm: 19, t: 'dorm', note: '学生宿舍，仲申书院的同学住在这里。' },
+          { n: '仲申书院10', x: -24.3, z: 13.9, w: 9, d: 4.5, f: 6, hm: 19, t: 'dorm',
+            // 按用户标注（2026-11-27）自原位 (-21,13.5) 向西南移 (-3.3,+0.4)：
+            // 原位东端约3个单位压进阳明湖西南端水面。移位后全楼绝对范围
+            // x -28.8..-19.8、z 11.65..16.15：东缘距湖西岸最窄处（z=12.5
+            // 岸线 x=-19.5）留0.3、南缘距宿舍区北路北缘（z=16.5）留0.35、
+            // 北缘在飞瀑小溪南缘以南0.07、西缘距飞瀑凉亭亭顶东缘约1.0，
+            // 整栋落在陆地上，不压水、不压路
+            note: '学生宿舍，仲申书院的同学住在这里。' },
           { n: '秀松书院11', x: 2, z: 45.5, w: 11, d: 6, f: 11, t: 'dorm', note: '学生宿舍，秀松书院的同学住在这里。' },
           { n: '秀松书院12', x: 2, z: 51.8, w: 11, d: 5, f: 14, fl: '14层', t: 'dorm',
             // 低层裙楼原 dz=-3.1 时北端穿进秀松书院11南墙0.7（穿模），自查后
@@ -632,7 +639,7 @@
           peak(-44, 42, 10.5, 0.3, 0x5d8f43);  // 南峰，顶高约3.15
           peak(-72, 40, 13, 0.26, 0x57873e);   // 西南延伸山脊
           peak(-86, 2, 15, 0.24, 0x5d8f43);    // 西侧山脊
-          peak(-36, 16, 8, 0.24, 0x649a47);    // 东侧山脚（临湖、飞瀑背后）
+          peak(-38, 16.5, 8, 0.24, 0x649a47);  // 东侧山脚（临湖、飞瀑背后；2026-11-27 随仲申书院10西移同步西挪：山东缘退到 x=-30，与宿舍楼西墙留1.2，不再压楼）
         })();
 
         // 南山：东侧山体，略低于龙山，同样多峰起伏
@@ -652,24 +659,29 @@
         // 龙山飞瀑（人造瀑布）：在仲申书院10幢的西侧——阳明湖西南端、龙山山脚临湖的岩壁上
         // 整体收小：岩壁立在龙山东麓山脚，瀑水落进西侧小潭，再由一条小溪沿宿舍楼北侧
         // 向东流入阳明湖西南端；瀑布、凉亭、汀步与仲申书院10之间留有明确间隔，不溅楼
+        // 2026-11-27 随仲申书院10向西南移，飞瀑整体同步西移2（组原点 -29→-31、
+        // 小潭 -27→-29）：岩壁东缘退到 x≈-30.3、凉亭亭顶东缘退到 x≈-29.9，
+        // 与宿舍楼西墙（x=-28.8）留1.0以上间隔，假山不压楼；小潭、瀑水面仍
+        // 落在山脚陆地上（西侧山脚峰已同步西挪，见龙山峰组），不压进湖里
         (function () {
           // 瀑下小潭：宿舍楼西北侧的水面，瀑水只落进这里
           var pool = new THREE.Mesh(new THREE.CircleGeometry(1, 28), flatMat(0x3f8fd2, 0.55));
           pool.scale.set(1.5, 1.2, 1);
           pool.rotation.x = -Math.PI / 2;
-          pool.position.set(-27, 0.05, 10.2);
+          pool.position.set(-29, 0.05, 10.2);
           pool.receiveShadow = true;
           scene.add(pool);
-          // 小溪：自小潭沿仲申书院10北侧向东，汇入阳明湖西南端西岸
-          var streamGeo = new THREE.PlaneGeometry(6.8, 0.9);
+          // 小溪：自小潭沿仲申书院10北侧向东，汇入阳明湖西南端西岸；
+          // 随小潭西移加长到9、斜度放缓，南缘全程在宿舍楼北墙（z=11.65）以北
+          var streamGeo = new THREE.PlaneGeometry(9, 0.85);
           streamGeo.rotateX(-Math.PI / 2);
           var stream = new THREE.Mesh(streamGeo, flatMat(0x3f8fd2, 0.55));
-          stream.rotation.y = -0.19;
-          stream.position.set(-22.3, 0.05, 11.2);
+          stream.rotation.y = -0.08;
+          stream.position.set(-23.55, 0.05, 10.85);
           stream.receiveShadow = true;
           scene.add(stream);
           var grpF = new THREE.Group();
-          grpF.position.set(-29, 0, 10);
+          grpF.position.set(-31, 0, 10);
           grpF.rotation.y = 1.15; // 岩壁正对东偏南向小潭与湖面
           grpF.scale.setScalar(0.58); // 收小：岩壁、亭、汀步整体缩到原来的约六成
           scene.add(grpF);
@@ -1405,8 +1417,8 @@
             if (Math.abs(x - 4) < 7.4 && Math.abs(z - 1.9) < 12.3) return true; // 田径场（含贴场铺装，长轴南北向）
             if (Math.abs(x - 24.5) < 5.5 && Math.abs(z - 54.5) < 4.5) return true; // 篮球场区
             if (x < -28 && x > -82 && z > 0 && z < 54) return true;            // 龙山山体
-            if (Math.abs(x + 29) < 3.6 && Math.abs(z - 10) < 3.6) return true; // 龙山飞瀑（仲申10西侧、龙山山脚）
-            if (x > -26 && x < -18.5 && Math.abs(z - 11.2) < 1.3) return true; // 飞瀑小溪（仲申10北侧）
+            if (Math.abs(x + 31) < 3.6 && Math.abs(z - 10) < 3.6) return true; // 龙山飞瀑（仲申10西侧、龙山山脚，已随宿舍楼西移）
+            if (x > -28.5 && x < -18.5 && Math.abs(z - 10.9) < 1.3) return true; // 飞瀑小溪（仲申10北侧，已随小潭西移加长）
             var nx1 = (x - 67) / 12, nz1 = (z + 2) / 12;
             if (nx1 * nx1 + nz1 * nz1 < 1) return true;                        // 南山主峰
             var nx2 = (x - 73) / 10, nz2 = (z - 13) / 10;
@@ -1487,7 +1499,7 @@
         addLabel('景岳路', new THREE.Vector3(21, 0.6, -20), 'road-label');
         addLabel('寅初路', new THREE.Vector3(-24, 0.6, -29), 'road-label');
         addLabel('阳明湖', new THREE.Vector3(-13.5, 0.6, -18), 'road-label');
-        addLabel('龙山飞瀑（人造瀑布）', new THREE.Vector3(-29, 2.1, 10));
+        addLabel('龙山飞瀑（人造瀑布）', new THREE.Vector3(-31, 2.1, 10));
 
         /* ---------------- 选中高亮 + 信息卡 ---------------- */
         var raycaster = new THREE.Raycaster();
