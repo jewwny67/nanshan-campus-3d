@@ -1080,6 +1080,31 @@
               pierW.position.set(px, 0.0, -8);
               scene.add(pierW);
             });
+            // 斜木桥：湖心岛通往东岸（元培南路侧），按用户标注斜向布置
+            var grpB = new THREE.Group();
+            var deckB = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.08, 0.72), woodM);
+            deckB.position.set(0, 0.17, 0);
+            deckB.castShadow = true; deckB.receiveShadow = true;
+            grpB.add(deckB);
+            [-0.33, 0.33].forEach(function (zo) {
+              var railB = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.05, 0.05), woodD);
+              railB.position.set(0, 0.42, zo);
+              railB.castShadow = true;
+              grpB.add(railB);
+              for (var bx = -2.0; bx <= 2.01; bx += 0.8) {
+                var postB = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.26, 0.05), woodD);
+                postB.position.set(bx, 0.29, zo);
+                grpB.add(postB);
+              }
+            });
+            [-1.2, 1.2].forEach(function (bx) {
+              var pierB = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.3, 0.6), woodD);
+              pierB.position.set(bx, 0.0, 0);
+              grpB.add(pierB);
+            });
+            grpB.position.set(-10.2, 0, -5.3);
+            grpB.rotation.y = -0.75;
+            scene.add(grpB);
           })();
           (function () {
             var postM = flatMat(0x6e4f30, 0.9);
