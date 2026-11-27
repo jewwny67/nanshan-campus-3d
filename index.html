@@ -2876,12 +2876,20 @@
             dirList.appendChild(btn);
           });
         }
+        function focusPoint(b) {
+          if (b.parts && b.parts.length) {
+            var tw = 0, cx = 0, cz = 0;
+            b.parts.forEach(function (pt) { var a = pt.w * pt.d; tw += a; cx += pt.dx * a; cz += pt.dz * a; });
+            return [b.x + cx / tw, b.z + cz / tw];
+          }
+          return [b.x + (b.ldx || 0), b.z + (b.ldz || 0)];
+        }
         function locateBuilding(b) {
           var mesh = pickables.filter(function (m) { return m.userData.b === b; })[0];
           if (mesh) select(mesh);
           var dist = Math.max(b.w, b.d) * 1.7 + 20;
           var az = Math.atan2(camera.position.x - controls.target.x, camera.position.z - controls.target.z);
-          var fx = b.x + (b.ldx || 0), fz = b.z + (b.ldz || 0);
+          var fp = focusPoint(b), fx = fp[0], fz = fp[1];
           var tg = new THREE.Vector3(fx, 1.2, fz);
           var pos = new THREE.Vector3(fx + Math.sin(az) * dist * 0.72, dist * 0.62, fz + Math.cos(az) * dist * 0.72);
           flyTo(pos, tg);
@@ -2920,7 +2928,7 @@
           var b = selected.userData.b;
           var dist = Math.max(b.w, b.d) * 1.05 + 11;
           var az = Math.atan2(camera.position.x - controls.target.x, camera.position.z - controls.target.z);
-          var fx = b.x + (b.ldx || 0), fz = b.z + (b.ldz || 0);
+          var fp = focusPoint(b), fx = fp[0], fz = fp[1];
           var tg = new THREE.Vector3(fx, 1.0, fz);
           var pos = new THREE.Vector3(fx + Math.sin(az) * dist * 0.78, dist * 0.5, fz + Math.cos(az) * dist * 0.78);
           flyTo(pos, tg);
