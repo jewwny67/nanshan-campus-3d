@@ -679,7 +679,7 @@
             var alongX = w >= d;
             var lenPx = alongX ? cw : chh;
             var widPx = alongX ? chh : cw;
-            var curb = Math.max(1.4, Math.min(widPx * 0.16, 8));
+            var curb = Math.max(2.5, Math.min(widPx * 0.22, 8));
             function band(side) {
               if (alongX) {
                 g.fillStyle = '#c8c2b6';
@@ -708,7 +708,7 @@
               }
             }
             // 中心虚线
-            var lw = Math.max(1.2, widPx * 0.035);
+            var lw = Math.max(1.8, widPx * 0.05);
             var dash = Math.max(7, lenPx * 0.045), gap = dash * 1.5;
             g.fillStyle = 'rgba(240,236,224,0.8)';
             for (var dp = 4; dp < lenPx; dp += dash + gap) {
@@ -1567,7 +1567,7 @@
           if (t === 'teach') return 0.35;   // 教学楼傍晚亮灯（晚课/自习），20点后由时间门控关灯
           if (t === 'dorm') return 0.54;    // 宿舍正常亮灯
           if (t === 'life') return 0.30;    // 食堂等生活建筑
-          if (t === 'sport') return 0.15;   // 体育场馆
+          if (t === 'sport') return 1.0;    // 体育馆全亮   // 体育场馆
           return 0.4;
         }
         BUILDINGS.forEach(function (b, idx) {
@@ -2436,11 +2436,17 @@
             var gOut = 1 - Math.max(0, Math.min(1, (h - 20) / 0.5));  // 20:00-20:30 关灯
             return gIn * gOut;
           })();
+          var sportGate = (function () {                               // 体育馆：天黑全亮，22点关灯
+            var gIn = Math.max(0, Math.min(1, (h - 17) / 1.5));
+            var gOut = 1 - Math.max(0, Math.min(1, (h - 22) / 0.5));
+            return gIn * gOut;
+          })();
           var hEff = h < 12 ? h + 24 : h;                              // 凌晨按24-25点算
           facadeMats.forEach(function (m) {
             var gated = m.userData.t === 'teach' || (m.userData.n && m.userData.n.indexOf('餐厅') >= 0);
             var k;
             if (gated) k = teachGate;
+            else if (m.userData.t === 'sport') k = sportGate;
             else if (m.userData.t === 'dorm') {                        // 宿舍：每栋随机22:00-22:54开始陆续关，24点全关（滑杆只到24点）
               var st = 22 + (m.userData.seed || 0.5) * 0.9;
               k = hEff <= st ? 1 : Math.max(0, 1 - (hEff - st) / (24 - st));
