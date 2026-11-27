@@ -2389,7 +2389,7 @@
           var nf = Math.max(0, Math.min(1, st.night));
           facadeMats.forEach(function (m) { m.emissiveIntensity = nf * 1.0; });
           signMats.forEach(function (m) { m.color.copy(SIGN_DAY).lerp(SIGN_NIGHT, nf); });
-          lampHeadMat.emissiveIntensity = nf * 1.6;   // 灯头暖光、不过曝，看着自然
+          lampHeadMat.emissiveIntensity = nf * 2.0;   // 灯头暖光、无光圈，微亮一点
 
           waterUniforms.uNight.value = nf;
           waterUniforms.uSky.value.copy(st.hor);
