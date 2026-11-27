@@ -2787,7 +2787,7 @@
             applyWeather();
           });
         });
-        // 自动读取绍兴当天天气：优先实时接口，失败时用仓库里的 weather.json
+        // 自动读取绍兴当天天气（实时接口）
         (function loadTodayWeather() {
           function useWx(w) {
             if (!w || !w.weather) return;
@@ -2814,9 +2814,7 @@
                   useWx({ city: '绍兴', weather: c[0], desc: c[1], temp: Math.round(d.current.temperature_2m) });
                 } else { throw new Error('no data'); }
               })
-              .catch(function () {
-                fetch('weather.json?t=' + Date.now()).then(function (r) { return r.ok ? r.json() : null; }).then(useWx).catch(function () {});
-              });
+              .catch(function () {});
           } catch (e) {}
         })();
 
