@@ -2595,6 +2595,10 @@
           selBox.box.copy(box);
           selBox.visible = true;
           infoType.textContent = TYPE[b.t].label;
+          var chipColors = { teach: '#ead9a8', dorm: '#afc4d4', life: '#f0a35e', sport: '#9cc8e8', gate: '#c23b2e' };
+          infoType.style.background = chipColors[b.t] || '';
+          infoType.style.borderColor = chipColors[b.t] || '';
+          infoType.style.color = (b.t === 'gate') ? '#fff' : '#22303c';
           infoName.textContent = b.n;
           infoFloors.textContent = b.fl ? b.fl
             : (b.t === 'gate' ? '校门（1层门楼）'
