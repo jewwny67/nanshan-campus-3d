@@ -1142,7 +1142,7 @@
         return v / tot;
       }
 
-      function massifGeo(peaks, x0, x1, z0, z1, segX, segZ, seed, maxH) {
+      function massifGeo(peaks, x0, x1, z0, z1, segX, segZ, seed, maxH, clearings) {
         // 整片山体高度场：各峰高斯隆起叠加，峰间连续无缝；噪声随高度增强，平地保持平整
         var w = x1 - x0, d = z1 - z0;
         var geo = new THREE.PlaneGeometry(w, d, segX, segZ);
@@ -1161,6 +1161,15 @@
           var nz = (fbm(wx * 0.055 + sd * 3.7, wz * 0.055 + sd * 1.9) - 0.5) * 0.34 +
                    (fbm(wx * 0.22 + sd * 7.3, wz * 0.22 + sd * 4.1) - 0.5) * 0.12;
           h = h * (1 + nz * Math.min(1, h / 1.5));
+          if (clearings) {   // 空地：把指定范围压平，不埋瀑布/凉亭等小景
+            for (var ci = 0; ci < clearings.length; ci++) {
+              var cl = clearings[ci];
+              var cdx = wx - cl[0], cdz = wz - cl[1];
+              var cd = Math.sqrt(cdx * cdx + cdz * cdz);
+              var cf = Math.max(0, Math.min(1, (cd - cl[2]) / (cl[3] - cl[2])));
+              h *= cf * cf * (3 - 2 * cf);
+            }
+          }
           pos.setZ(i, h - 0.06);
         }
         geo.rotateX(-Math.PI / 2);
@@ -1192,7 +1201,7 @@
             [-54, 26, 14, 0.62], [-66, 10, 11.5, 0.55], [-44, 42, 10.5, 0.52],
             [-72, 40, 13, 0.48], [-86, 2, 15, 0.43], [-38, 16.5, 8, 0.38]
           ];
-          var m = new THREE.Mesh(massifGeo(peaks, -102, -24, -18, 58, 96, 92, 7, 9), forestMat(0xffffff));
+          var m = new THREE.Mesh(massifGeo(peaks, -102, -24, -18, 58, 96, 92, 7, 9, [[-30, 10.5, 3.2, 6.2]]), forestMat(0xffffff));   // 龙山飞瀑处压平，瀑布凉亭不被山埋
           m.castShadow = true; m.receiveShadow = true;
           scene.add(m);
         })();
