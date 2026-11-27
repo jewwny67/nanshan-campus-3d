@@ -1548,6 +1548,7 @@
         var labels = [];
         var facadeMats = [];
         var signMats = [];   // 「绍兴大学」大字材质：白天深蓝黑、夜里发光
+        var sportLightMats = [];   // 体育馆架空层大射灯材质：夜里很亮，22点随馆关灯
         var SIGN_DAY = new THREE.Color(0x26324a);
         var SIGN_NIGHT = new THREE.Color(0xffd98a);
 
@@ -1666,6 +1667,22 @@
             slab2.castShadow = true; slab2.receiveShadow = true;
             slab2.userData.b = b; slab2.userData.grp = grp;
             grp.add(slab2); pickables.push(slab2);
+            // 架空层大射灯：顶板下成排的大灯，夜里很亮
+            var floodMat = new THREE.MeshStandardMaterial({ color: 0x3a3a3a, emissive: 0xfff1d6, emissiveIntensity: 0, roughness: 0.5 });
+            sportLightMats.push(floodMat);
+            var floodGeo = new THREE.BoxGeometry(0.34, 0.07, 0.34);
+            [-2.5, 1.5, 5.5].forEach(function (fx) {
+              for (var fz = -12; fz <= 12; fz += 6) {
+                var fl = new THREE.Mesh(floodGeo, floodMat);
+                fl.position.set(fx, 1.13, fz);
+                grp.add(fl);
+              }
+            });
+            for (var fz2 = -12; fz2 <= 12; fz2 += 6) {
+              var fl2 = new THREE.Mesh(floodGeo, floodMat);
+              fl2.position.set(-11.2, 1.16, fz2);
+              grp.add(fl2);
+            }
             // 架空层向西扩出段（往田径场方向延伸）：顶板、柱列、地面整体西扩，
             // 100米跑道随之移到扩出段里（最靠近田径场的一侧）；扩出段西缘绝对 x≈12.6，
             // 距田径场贴场铺装东缘（x≈10.2）只留约2.4（约24米）的看台绿带间隔；
@@ -2455,6 +2472,7 @@
             m.emissiveIntensity = nf * k;
           });
           signMats.forEach(function (m) { m.color.copy(SIGN_DAY).lerp(SIGN_NIGHT, nf); });
+          sportLightMats.forEach(function (m) { m.emissiveIntensity = nf * sportGate * 3.2; });   // 架空层大射灯：很亮
           lampHeadMat.emissiveIntensity = nf * 2.0;   // 灯头暖光、无光圈，微亮一点
 
           waterUniforms.uNight.value = nf;
