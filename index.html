@@ -35,6 +35,18 @@
         text-shadow: 0 1px 2px rgba(0,0,0,.5);
         transform: translateY(-4px);
       }
+      .bldg-label::before { content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; background: #9fb6cc; vertical-align: 1px; }
+      .bldg-label.lbl-teach::before { background: #ead9a8; }
+      .bldg-label.lbl-dorm::before { background: #afc4d4; }
+      .bldg-label.lbl-life::before { background: #f0a35e; }
+      .bldg-label.lbl-sport::before { background: #9cc8e8; }
+      .bldg-label.lbl-gate::before { background: #c23b2e; }
+      .bldg-label.lbl-teach { border-color: rgba(234,217,168,.65); }
+      .bldg-label.lbl-dorm { border-color: rgba(175,196,212,.65); }
+      .bldg-label.lbl-life { border-color: rgba(240,163,94,.7); }
+      .bldg-label.lbl-sport { border-color: rgba(156,200,232,.7); }
+      .bldg-label.lbl-gate { border-color: rgba(194,59,46,.75); }
+      .road-label::before { display: none; }
       .road-label {
         pointer-events: none;
         font-size: 11px; letter-spacing: .35em; white-space: nowrap;
@@ -1800,7 +1812,7 @@
             roof.castShadow = true;
             roof.userData.b = b; roof.userData.grp = grp;
             grp.add(roof); pickables.push(roof);
-            addLabel(b.n, new THREE.Vector3(b.x, 1.9, b.z));
+            addLabel(b.n, new THREE.Vector3(b.x, 1.9, b.z)), 'lbl-' + b.t);
             return;
           }
           if (b.complex) {
@@ -1992,7 +2004,7 @@
               pw2.castShadow = true;
               grp.add(pw2);
             });
-            addLabel(b.n, new THREE.Vector3(b.x, 2.85, b.z));
+            addLabel(b.n, new THREE.Vector3(b.x, 2.85, b.z)), 'lbl-' + b.t);
             return;
           }
           if (b.pilotis) {
@@ -2044,7 +2056,7 @@
             apron.position.set(0, 0.032, 0);
             apron.receiveShadow = true;
             grp.add(apron);
-            addLabel(b.n, new THREE.Vector3(b.x, colH + 0.75, b.z));
+            addLabel(b.n, new THREE.Vector3(b.x, colH + 0.75, b.z)), 'lbl-' + b.t);
             return;
           }
           if (b.arcGate) {
