@@ -2787,17 +2787,36 @@
             applyWeather();
           });
         });
-        // 读取仓库里的 weather.json（绍兴当天天气），自动套用
+        // 自动读取绍兴当天天气：优先实时接口，失败时用仓库里的 weather.json
         (function loadTodayWeather() {
+          function useWx(w) {
+            if (!w || !w.weather) return;
+            weather = w.weather;
+            document.querySelectorAll('.wx').forEach(function (b2) { b2.classList.toggle('active', b2.getAttribute('data-wx') === weather); });
+            var el = document.getElementById('wxNow');
+            if (el) el.textContent = (w.city || '绍兴') + ' ' + w.temp + '° ' + (w.desc || '');
+            applyWeather();
+          }
+          function classify(code) {
+            if (code === 0) return ['clear', '晴'];
+            if (code === 1 || code === 2) return ['cloudy', '多云'];
+            if (code === 3) return ['cloudy', '阴'];
+            if (code === 45 || code === 48) return ['fog', '雾'];
+            if ([71, 73, 75, 77, 85, 86].indexOf(code) >= 0) return ['snow', '雪'];
+            return ['rain', '雨'];
+          }
           try {
-            fetch('weather.json?t=' + Date.now()).then(function (r) { return r.ok ? r.json() : null; }).then(function (w) {
-              if (!w || !w.weather) return;
-              weather = w.weather;
-              document.querySelectorAll('.wx').forEach(function (b2) { b2.classList.toggle('active', b2.getAttribute('data-wx') === weather); });
-              var el = document.getElementById('wxNow');
-              if (el) el.textContent = (w.city || '绍兴') + ' ' + w.temp + '° ' + (w.desc || '');
-              applyWeather();
-            }).catch(function () {});
+            fetch('https://api.open-meteo.com/v1/forecast?latitude=30.03&longitude=120.58&current=weather_code,temperature_2m&timezone=Asia%2FShanghai')
+              .then(function (r) { return r.ok ? r.json() : null; })
+              .then(function (d) {
+                if (d && d.current) {
+                  var c = classify(d.current.weather_code);
+                  useWx({ city: '绍兴', weather: c[0], desc: c[1], temp: Math.round(d.current.temperature_2m) });
+                } else { throw new Error('no data'); }
+              })
+              .catch(function () {
+                fetch('weather.json?t=' + Date.now()).then(function (r) { return r.ok ? r.json() : null; }).then(useWx).catch(function () {});
+              });
           } catch (e) {}
         })();
 
