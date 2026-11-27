@@ -2417,9 +2417,15 @@
             var gOut = 1 - Math.max(0, Math.min(1, (h - 20) / 0.5));  // 20:00-20:30 关灯
             return gIn * gOut;
           })();
+          var dormGate = (function () {                                // 宿舍：22点后陆续关灯，凌晨1点全关
+            if (h >= 22) return Math.max(0, 1 - (h - 22) / 3);
+            if (h < 1) return (1 - h) / 3;
+            return h >= 17 ? 1 : 0;
+          })();
           facadeMats.forEach(function (m) {
             var gated = m.userData.t === 'teach' || (m.userData.n && m.userData.n.indexOf('餐厅') >= 0);
-            m.emissiveIntensity = nf * (gated ? teachGate : 1.0);
+            var k = gated ? teachGate : (m.userData.t === 'dorm' ? dormGate : 1.0);
+            m.emissiveIntensity = nf * k;
           });
           signMats.forEach(function (m) { m.color.copy(SIGN_DAY).lerp(SIGN_NIGHT, nf); });
           lampHeadMat.emissiveIntensity = nf * 2.0;   // 灯头暖光、无光圈，微亮一点
