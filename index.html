@@ -1806,28 +1806,26 @@
             });
             for (var fz2 = -12; fz2 <= 12; fz2 += 6) {
               var fl2 = new THREE.Mesh(floodGeo, floodMat);
-              fl2.position.set(-11.2, 1.16, fz2);
+              fl2.position.set(12.0, 1.16, fz2);
               grp.add(fl2);
             }
-            // 架空层向西扩出段（往田径场方向延伸）：顶板、柱列、地面整体西扩，
-            // 100米跑道随之移到扩出段里（最靠近田径场的一侧）；扩出段西缘绝对 x≈12.6，
-            // 距田径场贴场铺装东缘（x≈10.2）只留约2.4（约24米）的看台绿带间隔；
-            // 穿楼的沥青路位置不变，仍从主楼柱列中间穿过
+            // 架空层向东扩出段（用户要求：去掉西扩段，移到最东边加宽）：顶板、柱列、地面整体东扩；
+            // 穿楼的沥青路位置不变，仍从主楼柱列中间穿过；100米跑道在穿楼马路东边的主楼条带上
             var extSlab = new THREE.Mesh(new THREE.BoxGeometry(7.0, 0.24, 30.6), slabMat2);
-            extSlab.position.set(-12.0, 1.32, 0); // 比主楼板高 0.03：两板边缘搭接处顶面不共面、不闪烁；西扩段再往西延，西缘相对 -15.5（绝对 x≈11）
+            extSlab.position.set(12.0, 1.32, 0); // 比主楼板高 0.03：两板边缘搭接处顶面不共面、不闪烁；扩出段改到最东边（用户要求），东缘相对 15.5（绝对 x≈42）
             extSlab.castShadow = true; extSlab.receiveShadow = true;
             extSlab.userData.b = b; extSlab.userData.grp = grp;
             grp.add(extSlab); pickables.push(extSlab);
             for (var ci3 = 0; ci3 < 9; ci3++) {
               var c3 = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.17, 0.55), colMat2);
-              c3.position.set(-14.8, 0.585, -14 + ci3 * 3.5);
+              c3.position.set(14.8, 0.585, -14 + ci3 * 3.5);
               c3.castShadow = true; c3.receiveShadow = true;
               c3.userData.b = b; c3.userData.grp = grp;
               grp.add(c3); pickables.push(c3);
             }
             var extApron = new THREE.Mesh(new THREE.PlaneGeometry(7.0, 30), flatMat(0x8f9296, 0.95));
             extApron.rotation.x = -Math.PI / 2;
-            extApron.position.set(-12.0, 0.12, 0);
+            extApron.position.set(12.0, 0.12, 0);
             extApron.receiveShadow = true;
             grp.add(extApron);
             var stripApron = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 30), flatMat(0x8f9296, 0.95));
@@ -1840,7 +1838,7 @@
             sportGlowMats.push(glowMat);
             var glowPlane = new THREE.Mesh(new THREE.PlaneGeometry(24, 30), glowMat);
             glowPlane.rotation.x = -Math.PI / 2;
-            glowPlane.position.set(-3.5, 0.13, 0);
+            glowPlane.position.set(3.5, 0.13, 0);
             glowPlane.receiveShadow = true;
             grp.add(glowPlane);
             // 二层体量（拳击馆、网球场地；只建楼层本身，两个场馆在层内的具体方位未定、不分位置）
