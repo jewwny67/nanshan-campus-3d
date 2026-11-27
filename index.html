@@ -1833,6 +1833,21 @@
             stripApron.position.set(-7.5, 0.12, 0); // 宽收到 1.9、西缘 -8.45，与西扩段地面（东缘 -8.5）不再同高重叠闪烁
             stripApron.receiveShadow = true;
             grp.add(stripApron);
+            // 西侧看台（面向田径场）：阶梯式看台自西向东逐级升高，西段露天无顶，
+            // 东段伸入楼板之下成为有顶看台并继续向上延伸至楼板底（用户要求）
+            var standMat = flatMat(0xb9bcbe, 0.95);
+            var seatMat = flatMat(0x4a7fb5, 0.9);
+            for (var si = 0; si < 8; si++) {
+              var sh = 0.15 * (si + 1);
+              var step = new THREE.Mesh(new THREE.BoxGeometry(0.75, sh, 26), standMat);
+              step.position.set(-12.42 + si * 0.75, sh / 2, 0);
+              step.castShadow = true; step.receiveShadow = true;
+              step.userData.b = b; step.userData.grp = grp;
+              grp.add(step); pickables.push(step);
+              var seat = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.03, 26), seatMat);
+              seat.position.set(-12.42 + si * 0.75 - 0.12, sh + 0.015, 0);
+              grp.add(seat);
+            }
             // 架空层地面光晕：夜里射灯把整层地面打亮
             var glowMat = new THREE.MeshStandardMaterial({ color: 0x8f9296, emissive: 0xffd9a0, emissiveIntensity: 0, roughness: 0.95 });
             sportGlowMats.push(glowMat);
