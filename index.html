@@ -727,7 +727,7 @@
             }
             // 中心虚线
             var lw = Math.max(1.8, widPx * 0.05);
-            var dash = Math.max(7, lenPx * 0.045), gap = dash * 1.5;
+            var dash = Math.max(6, scale * 2.2), gap = Math.max(5, scale * 1.8);   // 中心虚线改为固定短虚线（不再随路长拉长）
             g.fillStyle = 'rgba(245,242,232,0.95)';
             for (var dp = 4; dp < lenPx; dp += dash + gap) {
               if (alongX) g.fillRect(dp, widPx / 2 - lw / 2, Math.min(dash, lenPx - dp), lw);
