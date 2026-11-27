@@ -1080,7 +1080,7 @@
               pierW.position.set(px, 0.0, -8);
               scene.add(pierW);
             });
-            // 斜木桥：湖心岛通往东岸（元培南路侧），按用户标注斜向布置
+            // 斜木桥：湖心岛往东北方向通东岸（元培南路侧），按用户要求朝东北布置
             var grpB = new THREE.Group();
             var deckB = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.08, 0.72), woodM);
             deckB.position.set(0, 0.17, 0);
@@ -1102,8 +1102,8 @@
               pierB.position.set(bx, 0.0, 0);
               grpB.add(pierB);
             });
-            grpB.position.set(-10.2, 0, -5.3);
-            grpB.rotation.y = -0.75;
+            grpB.position.set(-10.25, 0, -10.7);
+            grpB.rotation.y = 0.77;
             scene.add(grpB);
           })();
           (function () {
