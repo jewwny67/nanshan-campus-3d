@@ -1019,13 +1019,12 @@
               bg.add(pier);
             });
           })();
-          // 北侧小湖：寅初路以北、文渊路以西
-          var pond = new THREE.Mesh(new THREE.CircleGeometry(1, 40), waterMat);
-          pond.scale.set(5, 6.5, 1);
-          pond.rotation.x = -Math.PI / 2;
-          pond.position.set(-10, 0.05, -36);
-          pond.receiveShadow = true;
-          scene.add(pond);
+          // 北侧小湖：寅初路以北、文渊路以西（岸线做不规则，不再是正椭圆）
+          waterShape([
+            [-13.5, -41.5], [-10.5, -42.3], [-7.5, -41.8], [-5.8, -39.5],
+            [-5.2, -36.5], [-6, -33.8], [-8, -31.6], [-10, -30.8],
+            [-12.5, -31.2], [-14.2, -33], [-15, -36], [-14.6, -39.2]
+          ]);
           // 湖心岛：主湖中部的小岛，绿化 + 一座小亭
           var isle = new THREE.Mesh(new THREE.CircleGeometry(1, 28), flatMat(0x6fa653));
           isle.scale.set(1.7, 2.3, 1);
