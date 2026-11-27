@@ -1592,6 +1592,7 @@
         var facadeMats = [];
         var signMats = [];   // 「绍兴大学」大字材质：白天深蓝黑、夜里发光
         var sportLightMats = [];   // 体育馆架空层大射灯材质：夜里很亮，22点随馆关灯
+        var sportGlowMats = [];    // 架空层地面光晕：射灯打亮地面的效果
         var SIGN_DAY = new THREE.Color(0x26324a);
         var SIGN_NIGHT = new THREE.Color(0xffd98a);
 
@@ -1752,6 +1753,14 @@
             stripApron.position.set(-7.5, 0.2, 0); // 宽收到 1.9、西缘 -8.45，与西扩段地面（东缘 -8.5）不再同高重叠闪烁
             stripApron.receiveShadow = true;
             grp.add(stripApron);
+            // 架空层地面光晕：夜里射灯把整层地面打亮
+            var glowMat = new THREE.MeshStandardMaterial({ color: 0x8f9296, emissive: 0xffd9a0, emissiveIntensity: 0, roughness: 0.95 });
+            sportGlowMats.push(glowMat);
+            var glowPlane = new THREE.Mesh(new THREE.PlaneGeometry(22.4, 30), glowMat);
+            glowPlane.rotation.x = -Math.PI / 2;
+            glowPlane.position.set(-2.7, 0.21, 0);
+            glowPlane.receiveShadow = true;
+            grp.add(glowPlane);
             // 二层体量（拳击馆、网球场地；只建楼层本身，两个场馆在层内的具体方位未定、不分位置）
             var l2tex = makeFacade(type.wall, type.win, 1, 5151, litRatioFor(b.t));
             var l2mat = new THREE.MeshStandardMaterial({ map: l2tex.map, emissiveMap: l2tex.emissiveMap, emissive: new THREE.Color(0xffc46b), emissiveIntensity: 0, roughness: 0.9 });
@@ -2556,6 +2565,7 @@
           });
           signMats.forEach(function (m) { m.color.copy(SIGN_DAY).lerp(SIGN_NIGHT, nf); });
           sportLightMats.forEach(function (m) { m.emissiveIntensity = nf * sportGate * 3.2; });   // 架空层大射灯：很亮
+          sportGlowMats.forEach(function (m) { m.emissiveIntensity = nf * sportGate * 0.55; });   // 架空层地面被射灯打亮
           lampHeadMat.emissiveIntensity = nf * 2.0;   // 灯头暖光、无光圈，微亮一点
 
           waterUniforms.uNight.value = nf;
