@@ -95,6 +95,12 @@
         font-size: 12px; color: #cfe1f5;
       }
       .legend h2 { margin: 0 0 7px; font-size: 12px; font-weight: 600; color: #eaf3ff; letter-spacing: .06em; }
+      .legend-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin: 0 0 7px; padding: 0; background: none; border: none; cursor: pointer; font-size: 12px; font-weight: 600; color: #eaf3ff; letter-spacing: .06em; font-family: inherit; }
+      .legend-head .chev { font-size: 11px; transition: transform .3s ease; }
+      .legend.collapsed .legend-head .chev { transform: rotate(-90deg); }
+      .legend-body { overflow: hidden; max-height: 460px; opacity: 1; transition: max-height .35s ease, opacity .3s ease; }
+      .legend.collapsed .legend-body { max-height: 0; opacity: 0; }
+      @keyframes legendIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
       .legend ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
       .legend li { display: flex; align-items: center; gap: 7px; }
       .swatch { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(255,255,255,.35); flex: none; }
@@ -235,7 +241,7 @@
         header.panel h1 { font-size: 18px; }
         header.panel p { font-size: 11.5px; line-height: 1.55; }
         .legend { display: none; }
-        .legend.show { display: block; top: auto; left: 12px; right: auto; bottom: calc(108px + env(safe-area-inset-bottom)); }
+        .legend.show { display: block; top: auto; left: 12px; right: auto; bottom: calc(108px + env(safe-area-inset-bottom)); animation: legendIn .3s ease; }
         .hint { display: none; }
         .info { left: 12px; right: 12px; width: auto; bottom: calc(108px + env(safe-area-inset-bottom)); }
         input[type="range"] { width: 34vw; }
@@ -268,7 +274,8 @@
     </header>
 
     <nav class="legend glass" id="legend" aria-label="搜索定位与导览">
-      <h2>搜索定位 · 导览</h2>
+      <button type="button" class="legend-head" id="legendHead" aria-expanded="true">搜索定位 · 导览<span class="chev" aria-hidden="true">▾</span></button>
+      <div class="legend-body" id="legendBody">
       <div class="search-row">
         <input type="search" id="searchInput" placeholder="搜楼名/书院，回车定位…" aria-label="搜索并定位校园建筑" autocomplete="off" />
         <button type="button" class="btn" id="locateBtn" title="定位到当前匹配的第一处建筑">定位</button>
@@ -282,6 +289,7 @@
         <li><button type="button" class="filter-chip" data-type="gate"><span class="swatch" style="background:#c23b2e"></span>校门</button></li>
       </ul>
       <div class="dir-list" id="dirList" role="list"></div>
+      </div>
     </nav>
 
     <div class="info glass" id="infoCard" role="dialog" aria-live="polite" aria-label="建筑信息">
@@ -3010,15 +3018,27 @@
         });
         if (window.innerWidth <= 640) setPanel(false);
 
+        // 图例下拉折叠（标题行点按展开/收起）
+        var legend = document.getElementById('legend');
+        var legendHead = document.getElementById('legendHead');
+        if (legendHead) {
+          legendHead.addEventListener('click', function () {
+            var collapsed = legend.classList.toggle('collapsed');
+            legendHead.setAttribute('aria-expanded', String(!collapsed));
+          });
+        }
+
         // 移动端图例折叠按钮
         var legendBtn = document.getElementById('legendBtn');
-        var legend = document.getElementById('legend');
         if (window.innerWidth <= 640) {
           legendBtn.style.display = '';
+          legendBtn.innerHTML = '图例 <span class="chev" aria-hidden="true">▾</span>';
           legendBtn.addEventListener('click', function () {
             var on = legendBtn.getAttribute('aria-pressed') !== 'true';
             legendBtn.setAttribute('aria-pressed', String(on));
             legend.classList.toggle('show', on);
+            var ch = legendBtn.querySelector('.chev');
+            if (ch) ch.style.transform = on ? 'rotate(180deg)' : '';
           });
         }
 
