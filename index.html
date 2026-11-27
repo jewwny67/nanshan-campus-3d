@@ -368,7 +368,7 @@
           { n: '仲申书院1', x: 27, z: 21.5, w: 10, d: 4.8, f: 6, hm: 19, t: 'dorm', note: '学生宿舍，仲申书院的同学住在这里。' },
           { n: '仲申书院2', x: 27, z: 29, w: 10, d: 4.8, f: 6, hm: 19, t: 'dorm', note: '学生宿舍，仲申书院的同学住在这里。' },
           { n: '仲申书院3', x: 27, z: 36, w: 10, d: 4.8, f: 6, hm: 19, t: 'dorm', note: '学生宿舍，仲申书院的同学住在这里。' },
-          { n: '仲申书院10', x: -30, z: 13.9, w: 9, d: 4.5, f: 6, hm: 19, t: 'dorm',   // 2026-11-27 与飞瀑换位：楼靠龙山边，瀑布在前面（湖侧）
+          { n: '仲申书院10', x: -27, z: 13.9, w: 9, d: 4.5, f: 6, hm: 19, t: 'dorm',   // 2026-11-27 与飞瀑换位：楼靠龙山边，瀑布在前面（湖侧）
             // 按用户标注（2026-11-27）自原位 (-21,13.5) 向西南移 (-3.3,+0.4)：
             // 原位东端约3个单位压进阳明湖西南端水面。移位后全楼绝对范围
             // x -28.8..-19.8、z 11.65..16.15：东缘距湖西岸最窄处（z=12.5
@@ -1217,7 +1217,7 @@
             [-54, 26, 14, 0.62], [-66, 10, 11.5, 0.55], [-44, 42, 10.5, 0.52],
             [-72, 40, 13, 0.48], [-86, 2, 15, 0.43], [-38, 16.5, 8, 0.38]
           ];
-          var m = new THREE.Mesh(massifGeo(peaks, -102, -24, -18, 58, 96, 92, 7, 9, [[-30, 13.9, 4.6, 7.2], [-23.5, 9.5, 3.0, 5.5]]), forestMat(0xffffff));   // 龙山飞瀑处压平，瀑布凉亭不被山埋
+          var m = new THREE.Mesh(massifGeo(peaks, -102, -24, -18, 58, 96, 92, 7, 9, [[-27, 13.9, 4.6, 7.2], [-23.5, 9.0, 3.0, 5.5]]), forestMat(0xffffff));   // 龙山飞瀑处压平，瀑布凉亭不被山埋
           m.castShadow = true; m.receiveShadow = true;
           scene.add(m);
         })();
@@ -1244,7 +1244,7 @@
           var pool = new THREE.Mesh(new THREE.CircleGeometry(1, 28), waterMat);
           pool.scale.set(1.5, 1.2, 1);
           pool.rotation.x = -Math.PI / 2;
-          pool.position.set(-22.6, 0.05, 9.8);
+          pool.position.set(-22.6, 0.05, 9.3);
           pool.receiveShadow = true;
           scene.add(pool);
           // 小溪：自小潭沿仲申书院10北侧向东，汇入阳明湖西南端西岸；
@@ -1253,11 +1253,11 @@
           streamGeo.rotateX(-Math.PI / 2);
           var stream = new THREE.Mesh(streamGeo, waterMat);
           stream.rotation.y = -0.08;
-          stream.position.set(-20.3, 0.05, 10.0);
+          stream.position.set(-20.3, 0.05, 9.6);
           stream.receiveShadow = true;
           scene.add(stream);
           var grpF = new THREE.Group();
-          grpF.position.set(-23.5, 0, 9);   // 与仲申书院10换位后：瀑布在前面（湖侧）
+          grpF.position.set(-23.5, 0, 8.5);   // 与仲申书院10换位后：瀑布在前面（湖侧）
           grpF.rotation.y = 1.15; // 岩壁正对东偏南向小潭与湖面
           grpF.scale.setScalar(0.58); // 收小：岩壁、亭、汀步整体缩到原来的约六成
           scene.add(grpF);
