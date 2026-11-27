@@ -117,6 +117,16 @@
         -webkit-appearance: none; appearance: none;
         width: min(210px, 38vw); height: 36px; background: transparent; cursor: pointer;
       }
+      .slider-wrap { position: relative; display: inline-block; padding-bottom: 13px; }
+      .slider-wrap .tick { position: absolute; top: 15px; transform: translateX(-50%); pointer-events: none; }
+      .slider-wrap .tick i {
+        display: block; width: 7px; height: 7px; margin: 0 auto; border-radius: 50%;
+        background: #fff3d6; border: 1px solid rgba(90,60,10,.55); box-shadow: 0 0 3px rgba(0,0,0,.45);
+      }
+      .slider-wrap .tick em {
+        display: block; margin-top: 5px; font-style: normal; font-size: 9.5px;
+        color: #9db9d9; white-space: nowrap; text-align: center;
+      }
       input[type="range"]::-webkit-slider-runnable-track {
         height: 6px; border-radius: 3px;
         background: linear-gradient(90deg, #1d2f52 0%, #e8975a 22%, #7ec2f2 50%, #e8975a 78%, #1d2f52 100%);
@@ -289,7 +299,13 @@
     <div class="controls glass">
       <div class="time-wrap">
         <label for="timeSlider">时间</label>
-        <input type="range" id="timeSlider" min="0" max="24" step="0.25" value="10" aria-label="时间滑杆，控制太阳位置与光色" />
+        <span class="slider-wrap">
+          <input type="range" id="timeSlider" min="0" max="24" step="0.25" value="10" aria-label="时间滑杆，控制太阳位置与光色" />
+          <span class="tick" style="left:27.08%"><i></i><em>晨曦</em></span>
+          <span class="tick" style="left:50%"><i></i><em>正午</em></span>
+          <span class="tick" style="left:73.96%"><i></i><em>日落</em></span>
+          <span class="tick" style="left:87.5%"><i></i><em>夜色</em></span>
+        </span>
         <span id="timeOut">10:00</span>
       </div>
       <span class="time-presets" role="group" aria-label="时段快捷切换">
@@ -2755,7 +2771,27 @@
           waterUniforms.uSky.value.copy(st.hor);
           waterUniforms.uSunDir.value.copy(SUN_DIR);
         }
-        timeSlider.addEventListener('input', function () { setTime(parseFloat(timeSlider.value)); });
+        var TIME_PRESETS = [6.5, 12, 17.75, 21];
+        var lastSnapped = null;
+        timeSlider.addEventListener('input', function () {
+          var v = parseFloat(timeSlider.value);
+          var snap = null;
+          TIME_PRESETS.forEach(function (pp) { if (Math.abs(v - pp) <= 0.26) snap = pp; });
+          if (snap !== null) {
+            if (lastSnapped !== snap) {
+              lastSnapped = snap;
+              if (navigator.vibrate) navigator.vibrate(12);
+              Array.prototype.forEach.call(document.querySelectorAll('.preset-btn'), function (x) {
+                x.classList.toggle('active', parseFloat(x.getAttribute('data-hour')) === snap);
+              });
+            }
+            timeSlider.value = snap;
+            setTime(snap);
+          } else {
+            lastSnapped = null;
+            setTime(v);
+          }
+        });
         setTime(10);
 
         /* ---------------- 视角按钮 / 标签开关 ---------------- */
