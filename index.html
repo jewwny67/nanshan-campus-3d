@@ -1871,36 +1871,25 @@
             roofSlab.userData.b = b; roofSlab.userData.grp = grp;
             grp.add(roofSlab); pickables.push(roofSlab);
             // （东扩段顶板已并入 roofSlab 整块，不再单独建板）
-            // 屋顶足球场（西半）：绿地 + 白线
-            var fc2 = document.createElement('canvas'); fc2.width = 128; fc2.height = 256;
-            var fg2 = fc2.getContext('2d');
-            fg2.fillStyle = '#69a84f'; fg2.fillRect(0, 0, 128, 256);
-            fg2.strokeStyle = 'rgba(255,255,255,0.9)'; fg2.lineWidth = 3;
-            fg2.strokeRect(10, 10, 108, 236);
-            fg2.beginPath(); fg2.moveTo(10, 128); fg2.lineTo(118, 128); fg2.stroke();
-            fg2.beginPath(); fg2.arc(64, 128, 22, 0, Math.PI * 2); fg2.stroke();
-            var ftex2 = new THREE.CanvasTexture(fc2);
-            if ('colorSpace' in ftex2 && THREE.SRGBColorSpace) ftex2.colorSpace = THREE.SRGBColorSpace;
-            var pitch = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 13), new THREE.MeshStandardMaterial({ map: ftex2, roughness: 0.95 }));
-            pitch.rotation.x = -Math.PI / 2;
-            pitch.position.set(-4.4, 2.17, 0);
-            pitch.receiveShadow = true;
-            grp.add(pitch);
-            // 屋顶篮球场（东半）：两块场地 + 篮筐
-            var bc2 = document.createElement('canvas'); bc2.width = 128; bc2.height = 256;
-            var bg2 = bc2.getContext('2d');
-            bg2.fillStyle = '#b06a3f'; bg2.fillRect(0, 0, 128, 256);
-            bg2.strokeStyle = 'rgba(255,255,255,0.9)'; bg2.lineWidth = 3;
-            bg2.strokeRect(8, 8, 112, 112); bg2.strokeRect(8, 136, 112, 112);
-            bg2.beginPath(); bg2.arc(64, 64, 18, 0, Math.PI * 2); bg2.stroke();
-            bg2.beginPath(); bg2.arc(64, 192, 18, 0, Math.PI * 2); bg2.stroke();
-            var btex2 = new THREE.CanvasTexture(bc2);
-            if ('colorSpace' in btex2 && THREE.SRGBColorSpace) btex2.colorSpace = THREE.SRGBColorSpace;
-            var court = new THREE.Mesh(new THREE.PlaneGeometry(6.8, 13), new THREE.MeshStandardMaterial({ map: btex2, roughness: 0.95 }));
-            court.rotation.x = -Math.PI / 2;
-            court.position.set(4.6, 2.17, 0);
-            court.receiveShadow = true;
-            grp.add(court);
+            // 屋顶运动场：整个顶层一块整面、同一高度（用户要求顶层全部搞成一个整体）
+            var rc2 = document.createElement('canvas'); rc2.width = 512; rc2.height = 672;
+            var rg2 = rc2.getContext('2d');
+            rg2.fillStyle = '#69a84f'; rg2.fillRect(0, 0, 256, 672); // 西半足球场
+            rg2.fillStyle = '#b06a3f'; rg2.fillRect(256, 0, 256, 672); // 东半篮球场
+            rg2.strokeStyle = 'rgba(255,255,255,0.9)'; rg2.lineWidth = 4;
+            rg2.strokeRect(14, 14, 228, 644);
+            rg2.beginPath(); rg2.moveTo(14, 336); rg2.lineTo(242, 336); rg2.stroke();
+            rg2.beginPath(); rg2.arc(128, 336, 40, 0, Math.PI * 2); rg2.stroke();
+            rg2.strokeRect(270, 14, 228, 314); rg2.strokeRect(270, 344, 228, 314);
+            rg2.beginPath(); rg2.arc(384, 171, 34, 0, Math.PI * 2); rg2.stroke();
+            rg2.beginPath(); rg2.arc(384, 501, 34, 0, Math.PI * 2); rg2.stroke();
+            var rtex2 = new THREE.CanvasTexture(rc2);
+            if ('colorSpace' in rtex2 && THREE.SRGBColorSpace) rtex2.colorSpace = THREE.SRGBColorSpace;
+            var roofField = new THREE.Mesh(new THREE.PlaneGeometry(23.3, 30.6), new THREE.MeshStandardMaterial({ map: rtex2, roughness: 0.95 }));
+            roofField.rotation.x = -Math.PI / 2;
+            roofField.position.set(2.95, 2.17, 0);
+            roofField.receiveShadow = true;
+            grp.add(roofField);
             [-3.2, 3.2].forEach(function (hz) {
               var hp = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.83, 0.09), colMat2);
               hp.position.set(4.6, 2.58, hz * 1.85);
@@ -1910,15 +1899,15 @@
               grp.add(hb);
             });
             // 屋顶女儿墙
-            [[0, -15.2, 17.4, 0.18], [0, 15.2, 17.4, 0.18]].forEach(function (e) {
+            [[2.95, -15.2, 23.3, 0.18], [2.95, 15.2, 23.3, 0.18]].forEach(function (e) {
               var pw = new THREE.Mesh(new THREE.BoxGeometry(e[2], 0.21, e[3]), slabMat2);
               pw.position.set(e[0], 2.27, e[1]);
               pw.castShadow = true;
               grp.add(pw);
             });
-            [-1, 1].forEach(function (sx) {
+            [-8.6, 14.5].forEach(function (sx) {
               var pw2 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.21, 30.6), slabMat2);
-              pw2.position.set(sx * 8.6, 2.27, 0);
+              pw2.position.set(sx, 2.27, 0);
               pw2.castShadow = true;
               grp.add(pw2);
             });
